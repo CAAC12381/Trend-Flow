@@ -1,0 +1,444 @@
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --font-size: 16px;
+  --background: #ffffff;
+  --foreground: oklch(0.145 0 0);
+  --card: #ffffff;
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: #030213;
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.95 0.0058 264.53);
+  --secondary-foreground: #030213;
+  --muted: #ececf0;
+  --muted-foreground: #717182;
+  --accent: #e9ebef;
+  --accent-foreground: #030213;
+  --destructive: #d4183d;
+  --destructive-foreground: #ffffff;
+  --border: rgba(0, 0, 0, 0.1);
+  --input: transparent;
+  --input-background: #f3f3f5;
+  --switch-background: #cbced4;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: #030213;
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.145 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.145 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border: oklch(0.269 0 0);
+  --input: oklch(0.269 0 0);
+  --ring: oklch(0.439 0 0);
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.269 0 0);
+  --sidebar-ring: oklch(0.439 0 0);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /**
+  * Default typography styles for HTML elements (h1-h4, p, label, button, input).
+  * These are in @layer base, so Tailwind utility classes (like text-sm, text-lg) automatically override them.
+  */
+
+  html {
+    font-size: var(--font-size);
+  }
+
+  h1 {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h2 {
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h3 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h4 {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  label {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  button {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  input {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-normal);
+    line-height: 1.5;
+  }
+}
+
+html[data-app-theme="daylight"] {
+  color-scheme: light;
+  --background: #f8fbff;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #2563eb;
+  --primary-foreground: #ffffff;
+  --secondary: #eaf2ff;
+  --secondary-foreground: #1e293b;
+  --muted: #edf3fb;
+  --muted-foreground: #475569;
+  --accent: #dbeafe;
+  --accent-foreground: #1d4ed8;
+  --border: rgba(15, 23, 42, 0.12);
+  --input: rgba(255, 255, 255, 0.86);
+  --input-background: #ffffff;
+  --ring: #60a5fa;
+  --chart-1: #2563eb;
+  --chart-2: #0891b2;
+  --chart-3: #7c3aed;
+  --chart-4: #ea580c;
+  --chart-5: #16a34a;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0f172a;
+  --sidebar-accent: #eef6ff;
+  --sidebar-accent-foreground: #1d4ed8;
+  --sidebar-border: rgba(15, 23, 42, 0.12);
+}
+
+html[data-app-theme="daylight"] body {
+  background: #f8fbff;
+  color: #0f172a;
+}
+
+html[data-app-theme="daylight"] [class*="text-white/"],
+html[data-app-theme="daylight"] .text-white {
+  color: rgba(15, 23, 42, 0.9) !important;
+}
+
+html[data-app-theme="daylight"] .text-white\/95,
+html[data-app-theme="daylight"] .text-white\/90,
+html[data-app-theme="daylight"] .text-white\/92 {
+  color: rgba(15, 23, 42, 0.94) !important;
+}
+
+html[data-app-theme="daylight"] .text-white\/85,
+html[data-app-theme="daylight"] .text-white\/82,
+html[data-app-theme="daylight"] .text-white\/80,
+html[data-app-theme="daylight"] .text-white\/75,
+html[data-app-theme="daylight"] .text-white\/70,
+html[data-app-theme="daylight"] .text-white\/68,
+html[data-app-theme="daylight"] .text-white\/65,
+html[data-app-theme="daylight"] .text-white\/62,
+html[data-app-theme="daylight"] .text-white\/60 {
+  color: rgba(51, 65, 85, 0.86) !important;
+}
+
+html[data-app-theme="daylight"] .text-white\/55,
+html[data-app-theme="daylight"] .text-white\/50,
+html[data-app-theme="daylight"] .text-white\/45,
+html[data-app-theme="daylight"] .text-white\/42,
+html[data-app-theme="daylight"] .text-white\/40,
+html[data-app-theme="daylight"] .text-white\/35 {
+  color: rgba(71, 85, 105, 0.78) !important;
+}
+
+html[data-app-theme="daylight"] [class*="border-white/"] {
+  border-color: rgba(15, 23, 42, 0.13) !important;
+}
+
+html[data-app-theme="daylight"] [class*="bg-white/"] {
+  background-color: rgba(255, 255, 255, 0.78) !important;
+}
+
+html[data-app-theme="daylight"] [class*="bg-[#050510]"],
+html[data-app-theme="daylight"] [class*="bg-[#111522]"],
+html[data-app-theme="daylight"] [class*="bg-[#131522]"],
+html[data-app-theme="daylight"] [class*="bg-[#131528]"],
+html[data-app-theme="daylight"] [class*="bg-[#151726]"] {
+  background-color: rgba(255, 255, 255, 0.96) !important;
+}
+
+html[data-app-theme="daylight"] [class*="from-white/"],
+html[data-app-theme="daylight"] [class*="to-white/"] {
+  --tw-gradient-from: rgba(255, 255, 255, 0.92) var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: rgba(241, 247, 255, 0.76) var(--tw-gradient-to-position) !important;
+}
+
+html[data-app-theme="daylight"] [class*="shadow-[0_8px_32px"] {
+  box-shadow:
+    0 20px 45px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92) !important;
+}
+
+html[data-app-theme="daylight"] [class*="shadow-[0_20px_60px"],
+html[data-app-theme="daylight"] [class*="shadow-[0_20px_70px"] {
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.16) !important;
+}
+
+html[data-app-theme="daylight"] input,
+html[data-app-theme="daylight"] textarea,
+html[data-app-theme="daylight"] select {
+  color: #0f172a;
+}
+
+html[data-app-theme="daylight"] input::placeholder,
+html[data-app-theme="daylight"] textarea::placeholder {
+  color: rgba(71, 85, 105, 0.52) !important;
+}
+
+html[data-app-theme="daylight"] .recharts-cartesian-grid line,
+html[data-app-theme="daylight"] .recharts-polar-grid-angle line,
+html[data-app-theme="daylight"] .recharts-polar-grid-concentric circle {
+  stroke: rgba(15, 23, 42, 0.14);
+}
+
+html[data-app-theme="daylight"] .recharts-text,
+html[data-app-theme="daylight"] .recharts-legend-item-text {
+  fill: #334155 !important;
+  color: #334155 !important;
+}
+
+html[data-app-theme="daylight"] button[class*="from-[#a78bfa]"],
+html[data-app-theme="daylight"] button[class*="from-[#ec4899]"],
+html[data-app-theme="daylight"] button[class*="from-[#f97316]"],
+html[data-app-theme="daylight"] button[class*="from-[#3b82f6]"],
+html[data-app-theme="daylight"] [class*="bg-gradient-to-br"][class*="from-[#a78bfa]"] svg,
+html[data-app-theme="daylight"] [class*="bg-gradient-to-br"][class*="from-[#ec4899]"] svg,
+html[data-app-theme="daylight"] [class*="bg-gradient-to-br"][class*="from-[#f97316]"] svg,
+html[data-app-theme="daylight"] [class*="bg-gradient-to-br"][class*="from-[#06b6d4]"] svg,
+html[data-app-theme="daylight"] [class*="bg-gradient-to-br"][class*="from-[#3b82f6]"] svg {
+  color: #ffffff !important;
+}
+
+html[data-app-theme="daylight"] [class*="text-[#4ade80]"],
+html[data-app-theme="daylight"] [class*="text-green"],
+html[data-app-theme="daylight"] [class*="text-emerald"] {
+  color: #059669 !important;
+}
+
+html[data-app-theme="daylight"] [class*="text-[#facc15]"],
+html[data-app-theme="daylight"] [class*="text-yellow"],
+html[data-app-theme="daylight"] [class*="text-amber"] {
+  color: #b45309 !important;
+}
+
+html[data-app-theme="daylight"] [class*="text-cyan"] {
+  color: #0e7490 !important;
+}
+
+html[data-app-theme="daylight"] [class*="text-blue"] {
+  color: #1d4ed8 !important;
+}
+
+html[data-app-theme="daylight"] [class*="text-fuchsia"],
+html[data-app-theme="daylight"] [class*="text-purple"] {
+  color: #9333ea !important;
+}
+
+html[data-app-theme="daylight"] .bg-clip-text {
+  color: transparent !important;
+}
+
+html[data-app-theme="daylight"] [class*="bg-gradient-to-br"][class*="from-white/"],
+html[data-app-theme="daylight"] [class*="bg-gradient-to-br"][class*="via-white/"],
+html[data-app-theme="daylight"] [class*="bg-gradient-to-br"][class*="to-white/"],
+html[data-app-theme="daylight"] [class*="bg-gradient-to-r"][class*="via-white/"] {
+  background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(239, 246, 255, 0.82)) !important;
+}
+
+html[data-app-theme="daylight"] .geo-map-shell {
+  background:
+    radial-gradient(circle at 16% 12%, rgba(244, 114, 182, 0.46), transparent 34%),
+    radial-gradient(circle at 82% 18%, rgba(168, 85, 247, 0.42), transparent 36%),
+    radial-gradient(circle at 48% 92%, rgba(74, 222, 128, 0.34), transparent 40%),
+    linear-gradient(135deg, #fff7fb 0%, #f5f0ff 48%, #ecfff4 100%) !important;
+  border-color: rgba(99, 102, 241, 0.18) !important;
+  box-shadow:
+    0 20px 55px rgba(30, 64, 175, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+}
+
+html[data-app-theme="daylight"] .geo-map-shell svg path[fill="#ffffff"],
+html[data-app-theme="daylight"] .geo-map-shell svg path[fill="#fff"],
+html[data-app-theme="daylight"] .geo-map-shell svg path[fill="rgb(255,255,255)"] {
+  fill: #f1f5f9 !important;
+}
+
+html[data-app-theme="daylight"] .geo-map-shell svg path[stroke] {
+  stroke: rgba(100, 116, 139, 0.38) !important;
+}
+
+html[data-app-theme="daylight"] .daylight-map-panel {
+  background:
+    radial-gradient(circle at 8% 4%, rgba(244, 114, 182, 0.3), transparent 30%),
+    radial-gradient(circle at 88% 10%, rgba(168, 85, 247, 0.3), transparent 32%),
+    radial-gradient(circle at 44% 100%, rgba(74, 222, 128, 0.26), transparent 38%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 245, 255, 0.9) 48%, rgba(240, 253, 244, 0.9)) !important;
+  border-color: rgba(168, 85, 247, 0.18) !important;
+  box-shadow:
+    0 24px 70px rgba(88, 28, 135, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92) !important;
+}
+
+html[data-app-theme="daylight"] .daylight-map-panel select,
+html[data-app-theme="daylight"] .daylight-map-panel option {
+  background-color: rgba(255, 255, 255, 0.96) !important;
+  color: #0f172a !important;
+}
+
+html[data-app-theme="daylight"] .daylight-map-panel [class*="bg-white/"],
+html[data-app-theme="daylight"] .daylight-map-panel [class*="via-white/"] {
+  background-color: rgba(255, 255, 255, 0.82) !important;
+}
+
+html[data-app-theme="daylight"] .daylight-map-canvas {
+  background:
+    radial-gradient(circle at 12% 18%, rgba(244, 114, 182, 0.5), transparent 34%),
+    radial-gradient(circle at 86% 18%, rgba(168, 85, 247, 0.48), transparent 36%),
+    radial-gradient(circle at 54% 100%, rgba(74, 222, 128, 0.42), transparent 42%),
+    linear-gradient(135deg, #fff1f8 0%, #f4edff 50%, #ecfdf3 100%) !important;
+}
+
+html[data-app-theme="daylight"] .daylight-map-canvas svg,
+html[data-app-theme="daylight"] .daylight-map-canvas svg > rect {
+  background: transparent !important;
+  fill: transparent !important;
+}
+
+html[data-app-theme="daylight"] .daylight-map-canvas svg path[fill="#ffffff"],
+html[data-app-theme="daylight"] .daylight-map-canvas svg path[fill="#fff"],
+html[data-app-theme="daylight"] .daylight-map-canvas svg path[fill="rgb(255,255,255)"] {
+  fill: rgba(255, 247, 237, 0.92) !important;
+}
+
+html[data-app-theme="daylight"] .daylight-state-detail {
+  background:
+    radial-gradient(circle at top left, rgba(244, 114, 182, 0.2), transparent 34%),
+    radial-gradient(circle at 84% 12%, rgba(74, 222, 128, 0.16), transparent 30%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.86), rgba(250, 245, 255, 0.78)) !important;
+  border-color: rgba(168, 85, 247, 0.16) !important;
+}
+
+html[data-app-theme="daylight"] .daylight-crisis-panel {
+  background:
+    radial-gradient(circle at 8% 0%, rgba(251, 113, 133, 0.24), transparent 30%),
+    radial-gradient(circle at 92% 10%, rgba(251, 146, 60, 0.18), transparent 34%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(255, 247, 237, 0.88)) !important;
+  border-color: rgba(251, 113, 133, 0.18) !important;
+  box-shadow:
+    0 22px 60px rgba(127, 29, 29, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.94) !important;
+}
+
+html[data-app-theme="daylight"] .daylight-crisis-panel .daylight-crisis-alert,
+html[data-app-theme="daylight"] .daylight-crisis-panel > div:last-child > div {
+  background: rgba(255, 255, 255, 0.78) !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+}
