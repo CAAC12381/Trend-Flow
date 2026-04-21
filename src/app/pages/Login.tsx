@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import {
   Lock,
   Mail,
@@ -42,8 +42,11 @@ const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID?.trim() || "";
 
 export default function Login() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { login, register, googleLogin, socialLogin, isAuthenticated } = useAuth();
-  const [view, setView] = useState<AuthView>("login");
+  const [view, setView] = useState<AuthView>(() =>
+    searchParams.get("view") === "register" ? "register" : "login",
+  );
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -58,9 +61,20 @@ export default function Login() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/", { replace: true });
+      navigate("/app", { replace: true });
     }
   }, [isAuthenticated, navigate]);
+
+  useEffect(() => {
+    if (searchParams.get("view") === "register") {
+      setView("register");
+      return;
+    }
+
+    if (searchParams.get("view") === "login") {
+      setView("login");
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (!(view === "login" || view === "register")) {
@@ -128,13 +142,13 @@ export default function Login() {
     try {
       if (view === "register") {
         await register(username, email, password);
-        navigate("/", { replace: true });
+        navigate("/app", { replace: true });
         return;
       }
 
       if (view === "login") {
         await login(email, password);
-        navigate("/", { replace: true });
+        navigate("/app", { replace: true });
         return;
       }
 
@@ -212,7 +226,7 @@ export default function Login() {
 
     try {
       await socialLogin(provider);
-      navigate("/", { replace: true });
+      navigate("/app", { replace: true });
     } catch (submitError) {
       setError(
         submitError instanceof Error
@@ -231,7 +245,7 @@ export default function Login() {
 
     try {
       await googleLogin(credential);
-      navigate("/", { replace: true });
+      navigate("/app", { replace: true });
     } catch (submitError) {
       setError(
         submitError instanceof Error

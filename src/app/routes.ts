@@ -1,8 +1,15 @@
-import { createBrowserRouter } from 'react-router';
+import { createElement } from 'react';
+import { Navigate, createBrowserRouter } from 'react-router';
 import { Layout } from './components/Layout';
 import RequireAuth from './components/RequireAuth';
 
 export const router = createBrowserRouter([
+  {
+    path: '/',
+    lazy: async () => ({
+      Component: (await import('./pages/Landing')).default,
+    }),
+  },
   {
     path: '/login',
     lazy: async () => ({
@@ -10,10 +17,22 @@ export const router = createBrowserRouter([
     }),
   },
   {
+    path: '/tendencias',
+    element: createElement(Navigate, { to: '/app/tendencias', replace: true }),
+  },
+  {
+    path: '/analisis',
+    element: createElement(Navigate, { to: '/app/analisis', replace: true }),
+  },
+  {
+    path: '/configuracion',
+    element: createElement(Navigate, { to: '/app/configuracion', replace: true }),
+  },
+  {
     Component: RequireAuth,
     children: [
       {
-        path: '/',
+        path: '/app',
         Component: Layout,
         children: [
           {

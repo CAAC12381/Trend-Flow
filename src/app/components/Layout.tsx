@@ -69,10 +69,10 @@ export function Layout() {
   const searchInputRef = useRef<HTMLInputElement | null>(null);
 
   const navItems = [
-    { to: "/", icon: BarChart3, label: copy.dashboard },
-    { to: "/tendencias", icon: TrendingUp, label: copy.trends },
-    { to: "/analisis", icon: PieChart, label: copy.analytics },
-    { to: "/configuracion", icon: Settings, label: copy.settings },
+    { to: "/app", icon: BarChart3, label: copy.dashboard },
+    { to: "/app/tendencias", icon: TrendingUp, label: copy.trends },
+    { to: "/app/analisis", icon: PieChart, label: copy.analytics },
+    { to: "/app/configuracion", icon: Settings, label: copy.settings },
   ];
 
   useEffect(() => {
@@ -278,7 +278,7 @@ export function Layout() {
 
     setSearchValue(query);
     setIsSearchOpen(false);
-    navigate(`/tendencias?q=${encodeURIComponent(query)}`);
+    navigate(`/app/tendencias?q=${encodeURIComponent(query)}`);
   }
 
   async function markNotificationAsRead(id: string) {

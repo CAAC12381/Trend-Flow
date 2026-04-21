@@ -25,7 +25,7 @@ export default function NotFound() {
           <p className="text-white/60 mb-8">{copy.pageNotFoundText}</p>
 
           <button
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/app")}
             className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#a78bfa] to-[#3b82f6] text-sm font-medium text-white shadow-[0_0_20px_rgba(147,51,234,0.4)] hover:shadow-[0_0_30px_rgba(147,51,234,0.6)] transition-all mx-auto"
           >
             <TrendingUp className="w-4 h-4" />

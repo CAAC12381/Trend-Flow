@@ -406,7 +406,7 @@ export default function Analytics() {
       return;
     }
 
-    navigate(`/tendencias?q=${encodeURIComponent(query)}`);
+    navigate(`/app/tendencias?q=${encodeURIComponent(query)}`);
   }
 
   function loadAnalytics() {
