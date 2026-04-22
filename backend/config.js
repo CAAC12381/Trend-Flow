@@ -18,3 +18,7 @@ export const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
 export const OPENROUTER_MODEL =
   process.env.OPENROUTER_MODEL || "openrouter/free";
 export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || "";
+export const ADMIN_EMAILS = String(process.env.ADMIN_EMAILS || "")
+  .split(",")
+  .map((email) => email.trim().toLowerCase())
+  .filter(Boolean);

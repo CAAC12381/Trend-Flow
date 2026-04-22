@@ -10,6 +10,7 @@ import {
   Flame,
   CheckCheck,
   LogOut,
+  ShieldCheck,
   X,
 } from "lucide-react";
 import {
@@ -52,7 +53,7 @@ export function Layout() {
   const navigate = useNavigate();
   const location = useLocation();
   const { preferences } = useAppPreferences();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const copy = useCopy();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -72,6 +73,9 @@ export function Layout() {
     { to: "/app", icon: BarChart3, label: copy.dashboard },
     { to: "/app/tendencias", icon: TrendingUp, label: copy.trends },
     { to: "/app/analisis", icon: PieChart, label: copy.analytics },
+    ...(user?.role === "admin"
+      ? [{ to: "/app/admin", icon: ShieldCheck, label: "Admin" }]
+      : []),
     { to: "/app/configuracion", icon: Settings, label: copy.settings },
   ];
 
@@ -310,7 +314,7 @@ export function Layout() {
 
   return (
     <div
-      className={`flex min-h-screen overflow-hidden ${
+      className={`flex h-screen overflow-hidden ${
         preferences.theme === "daylight"
           ? "bg-[radial-gradient(circle_at_top_left,_rgba(56,189,248,0.18),_transparent_30%),radial-gradient(circle_at_bottom_right,_rgba(99,102,241,0.14),_transparent_28%),linear-gradient(180deg,#ffffff_0%,#eef6ff_48%,#f8fbff_100%)]"
           : preferences.theme === "aurora"
@@ -324,8 +328,8 @@ export function Layout() {
         <div className="absolute bottom-[-10%] left-[20%] h-[40%] w-[50%] rounded-[100%] bg-gradient-to-tr from-[#3b4c6b]/20 via-[#1a2540]/10 to-transparent blur-[100px]" />
       </div>
 
-      <aside className="relative z-10 flex w-72 flex-col p-6">
-        <div className="flex-1 rounded-[32px] border border-white/20 bg-gradient-to-br from-white/[0.12] to-white/[0.06] p-6 shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-2xl">
+      <aside className="sticky top-0 z-10 flex h-screen w-72 shrink-0 flex-col p-6">
+        <div className="flex min-h-0 flex-1 flex-col rounded-[32px] border border-white/20 bg-gradient-to-br from-white/[0.12] to-white/[0.06] p-6 shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-2xl">
             <div className="mb-10">
               <div className="flex items-center gap-3">
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] shadow-[0_0_24px_rgba(96,165,250,0.18)] backdrop-blur-xl">
@@ -344,7 +348,7 @@ export function Layout() {
               <p className="mt-2 text-xs text-white/50">Social Analytics Platform</p>
             </div>
 
-          <nav className="flex-1 space-y-2">
+          <nav className="scrollbar-none min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
             {navItems.map((item) => (
               <NavLink
                 key={item.to}
@@ -355,7 +359,7 @@ export function Layout() {
                       : "border-transparent hover:bg-white/[0.05]"
                   }`
                 }
-                end={item.to === "/"}
+                end={item.to === "/app"}
                 to={item.to}
               >
                 {({ isActive }) => (
@@ -409,7 +413,7 @@ export function Layout() {
         </div>
       </aside>
 
-      <main className="relative z-10 flex-1 overflow-y-auto p-6">
+      <main className="relative z-10 h-screen flex-1 overflow-y-auto p-6">
         <header className="mb-8 flex items-center justify-between">
           <div>
             <h2 className="text-3xl font-light tracking-tight text-white">

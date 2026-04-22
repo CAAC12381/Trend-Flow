@@ -9,10 +9,11 @@ import {
   limitDataUrl,
   normalizeBooleanRecord,
   normalizeEmail,
+  normalizeOptionalText,
   normalizeText,
 } from "./utils/validation.js";
 import { sendError } from "./utils/http.js";
-import { GOOGLE_CLIENT_ID } from "./config.js";
+import { ADMIN_EMAILS, GOOGLE_CLIENT_ID } from "./config.js";
 
 const SESSION_DAYS = 7;
 
@@ -22,6 +23,14 @@ function createResetCode() {
 
 function createToken() {
   return crypto.randomBytes(48).toString("hex");
+}
+
+function roleForEmail(email, fallback = "user") {
+  return ADMIN_EMAILS.includes(String(email || "").trim().toLowerCase())
+    ? "admin"
+    : fallback === "admin"
+      ? "admin"
+      : "user";
 }
 
 function createSocialIdentity(provider) {
@@ -53,7 +62,7 @@ function addDays(date, days) {
 export async function getSession(token) {
   const [rows] = await pool.query(
     `
-      SELECT s.user_id, s.expires_at, u.username, u.email, u.avatar, u.bio, u.plan, u.account_status, u.language, u.theme
+      SELECT s.user_id, s.expires_at, u.username, u.email, u.avatar, u.bio, u.plan, u.role, u.account_status, u.language, u.theme
       FROM sessions s
       JOIN users u ON u.id = s.user_id
       WHERE s.token = ?
@@ -79,6 +88,7 @@ async function buildAuthResponse(userId) {
     [userId],
   );
   const user = users[0];
+  const resolvedRole = roleForEmail(user.email, user.role);
   const prefRow = await getUserPreferences(user.id);
   const token = createToken();
   const expiresAt = addDays(new Date(), SESSION_DAYS);
@@ -87,6 +97,13 @@ async function buildAuthResponse(userId) {
     "INSERT INTO sessions (user_id, token, expires_at) VALUES (?, ?, ?)",
     [user.id, token, expiresAt],
   );
+
+  if (resolvedRole !== user.role) {
+    await pool.query("UPDATE users SET role = ? WHERE id = ?", [
+      resolvedRole,
+      user.id,
+    ]);
+  }
 
   return {
     token,
@@ -97,6 +114,7 @@ async function buildAuthResponse(userId) {
       avatar: user.avatar,
       bio: user.bio,
       plan: user.plan,
+      role: resolvedRole,
       accountStatus: user.account_status,
       language: user.language,
       theme: user.theme,
@@ -190,6 +208,22 @@ export async function requireSessionUser(req, res) {
   return { session, token };
 }
 
+export async function requireAdminUser(req, res) {
+  const auth = await requireSessionUser(req, res);
+  if (!auth) {
+    return null;
+  }
+
+  const { session } = auth;
+  const resolvedRole = roleForEmail(session.email, session.role);
+  if (resolvedRole !== "admin") {
+    sendError(res, 403, "Admin access required");
+    return null;
+  }
+
+  return auth;
+}
+
 export function createAuthRouter() {
   const router = express.Router();
 
@@ -217,8 +251,8 @@ export function createAuthRouter() {
       const passwordHash = await bcrypt.hash(password, 10);
 
       const [result] = await pool.query(
-        "INSERT INTO users (username, email, password_hash, bio) VALUES (?, ?, ?, ?)",
-        [username, email, passwordHash, ""],
+        "INSERT INTO users (username, email, password_hash, bio, role) VALUES (?, ?, ?, ?, ?)",
+        [username, email, passwordHash, "", roleForEmail(email)],
       );
 
       const userId = result.insertId;
@@ -280,8 +314,8 @@ export function createAuthRouter() {
       if (!user) {
         const passwordHash = await bcrypt.hash(createToken(), 10);
         const [result] = await pool.query(
-          "INSERT INTO users (username, email, password_hash, bio) VALUES (?, ?, ?, ?)",
-          [social.username, social.email, passwordHash, social.bio],
+          "INSERT INTO users (username, email, password_hash, bio, role) VALUES (?, ?, ?, ?, ?)",
+          [social.username, social.email, passwordHash, social.bio, roleForEmail(social.email)],
         );
 
         await ensureDefaultPreferences(result.insertId);
@@ -318,13 +352,14 @@ export function createAuthRouter() {
       if (!user) {
         const passwordHash = await bcrypt.hash(createToken(), 10);
         const [result] = await pool.query(
-          "INSERT INTO users (username, email, password_hash, bio, avatar) VALUES (?, ?, ?, ?, ?)",
+          "INSERT INTO users (username, email, password_hash, bio, avatar, role) VALUES (?, ?, ?, ?, ?, ?)",
           [
             googleUser.username,
             googleUser.email,
             passwordHash,
             `Cuenta conectada con Google (${googleUser.providerId}).`,
             googleUser.avatar,
+            roleForEmail(googleUser.email),
           ],
         );
         await ensureDefaultPreferences(result.insertId);
@@ -473,6 +508,7 @@ export function createAuthRouter() {
           avatar: session.avatar,
           bio: session.bio,
           plan: session.plan,
+          role: roleForEmail(session.email, session.role),
           accountStatus: session.account_status,
           language: session.language,
           theme: session.theme,

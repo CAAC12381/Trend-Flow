@@ -232,6 +232,7 @@ export interface AuthUser {
   avatar: string | null;
   bio: string;
   plan: "Premium" | "Student";
+  role: "user" | "admin";
   accountStatus: "active" | "paused";
   language: "es" | "en";
   theme: "night" | "aurora" | "daylight";
@@ -269,6 +270,59 @@ export interface AudienceBreakdownItem {
 export interface AssistantMessage {
   role: "system" | "user" | "assistant";
   content: string;
+}
+
+export interface AdminSummary {
+  generatedAt: string;
+  totals: {
+    users: number;
+    admins: number;
+    activeUsers: number;
+    premiumUsers: number;
+    sessions: number;
+    activeSessions: number;
+    savedReports: number;
+    notifications: number;
+    unreadNotifications: number;
+    searches: number;
+    snapshots: number;
+    trendItems: number;
+    enrichments: number;
+  };
+  latestSnapshot: {
+    capturedAt: string | null;
+    sourceCount: number;
+    totalMentions: number;
+  } | null;
+  recentUsers: Array<{
+    id: number;
+    username: string;
+    email: string;
+    role: "user" | "admin";
+    plan: "Premium" | "Student";
+    accountStatus: "active" | "paused";
+    createdAt: string | null;
+  }>;
+  sourceTotals: Array<{
+    source: TrendSource;
+    totalItems: number;
+    mentions: number;
+  }>;
+  recentActivity: Array<{
+    type: "search" | "report";
+    title: string;
+    actor: string;
+    createdAt: string | null;
+  }>;
+  providers: Array<{
+    label: string;
+    configured: boolean;
+    detail: string;
+  }>;
+  access: {
+    mode: string;
+    adminEmailsConfigured: number;
+  };
 }
 
 async function readErrorMessage(
@@ -333,6 +387,10 @@ export function getDashboardSummary() {
 
 export function getAnalyticsSummary() {
   return fetchJson<AnalyticsSummary>("/analytics-summary");
+}
+
+export function getAdminSummary() {
+  return fetchJson<AdminSummary>("/admin/summary");
 }
 
 export function getHistoricalTrends(query: string) {

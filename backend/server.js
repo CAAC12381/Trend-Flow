@@ -4,6 +4,7 @@ import { initDatabase } from "./db.js";
 import { createAuthRouter } from "./auth-routes.js";
 import { createTrendsRouter } from "./routes/trends-routes.js";
 import { createAssistantRouter } from "./routes/assistant-routes.js";
+import { createAdminRouter } from "./routes/admin-routes.js";
 import { createUserDataRouter } from "./routes/user-data-routes.js";
 import { CORS_ORIGIN, JSON_LIMIT, PORT, API_BASE_URL } from "./config.js";
 import { sendError } from "./utils/http.js";
@@ -30,6 +31,7 @@ app.use("/auth", createAuthRouter());
 app.use(createTrendsRouter());
 app.use(createAssistantRouter());
 app.use(createUserDataRouter());
+app.use(createAdminRouter());
 
 app.use((error, _req, res, _next) => {
   console.error("Unhandled API error:", error?.message || error);

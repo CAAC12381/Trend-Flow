@@ -1,5 +1,6 @@
 import mysql from "mysql2/promise";
 import { loadLocalEnv } from "./load-env.js";
+import { ADMIN_EMAILS } from "./config.js";
 
 loadLocalEnv();
 
@@ -43,6 +44,7 @@ export async function initDatabase() {
       avatar LONGTEXT NULL,
       bio TEXT NULL,
       plan ENUM('Premium','Student') NOT NULL DEFAULT 'Premium',
+      role ENUM('user','admin') NOT NULL DEFAULT 'user',
       account_status ENUM('active','paused') NOT NULL DEFAULT 'active',
       language ENUM('es','en') NOT NULL DEFAULT 'es',
       theme ENUM('night','aurora','daylight') NOT NULL DEFAULT 'night',
@@ -54,6 +56,19 @@ export async function initDatabase() {
     ALTER TABLE users
     MODIFY theme ENUM('night','aurora','daylight') NOT NULL DEFAULT 'night'
   `);
+
+  await pool.query(`
+    ALTER TABLE users
+    ADD COLUMN IF NOT EXISTS role ENUM('user','admin') NOT NULL DEFAULT 'user'
+    AFTER plan
+  `);
+
+  if (ADMIN_EMAILS.length > 0) {
+    await pool.query(
+      "UPDATE users SET role = 'admin' WHERE LOWER(email) IN (?)",
+      [ADMIN_EMAILS],
+    );
+  }
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS sessions (
