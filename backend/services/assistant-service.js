@@ -6,6 +6,12 @@ export function sanitizeAssistantReply(text) {
     .replace(/#{1,6}\s*/g, "")
     .replace(/\*\*/g, "")
     .replace(/^\s*[-*]\s+/gm, "- ")
+    .replace(/:\s+-\s+/g, ":\n- ")
+    .replace(/([%)])\s+-\s+/g, "$1\n- ")
+    .replace(/(\d+\.)\s+/g, "\n$1 ")
+    .replace(/\s+(Tendencia lider|Lider actual|Crecimiento promedio|Current leader|Average growth|Prioridad|Priority):/g, "\n\n$1:")
+    .replace(/^(Resumen[^:]*:|Top trend summary:|Quick guide[^:]*:|Guia rapida[^:]*:|Lectura rapida:|Quick reading:|Ideas de contenido recomendadas:|Recommended content ideas:)/gm, "$1\n")
+    .replace(/^(Resumen[^:]*:|Top trend summary:)\n\s*([^\n-].*)$/m, "$1\n- $2")
     .replace(/\|/g, " ")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
