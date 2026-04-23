@@ -9,27 +9,43 @@ const DB_PORT = Number.parseInt(process.env.DB_PORT || "3306", 10);
 const DB_USER = process.env.DB_USER || "root";
 const DB_PASSWORD = process.env.DB_PASSWORD || "";
 const DB_NAME = process.env.DB_NAME || "treend_db";
+const DB_SSL = String(process.env.DB_SSL || "").toLowerCase() === "true";
 
-const pool = mysql.createPool({
+const databaseConfig = {
   host: DB_HOST,
   port: DB_PORT,
   user: DB_USER,
   password: DB_PASSWORD,
-  database: DB_NAME,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
+  ...(DB_SSL ? { ssl: { rejectUnauthorized: false } } : {}),
+};
+
+const pool = mysql.createPool({
+  ...databaseConfig,
+  database: DB_NAME,
 });
+
+async function columnExists(tableName, columnName) {
+  const [rows] = await pool.query(
+    `
+      SELECT COUNT(*) AS total
+      FROM information_schema.COLUMNS
+      WHERE TABLE_SCHEMA = ?
+        AND TABLE_NAME = ?
+        AND COLUMN_NAME = ?
+    `,
+    [DB_NAME, tableName, columnName],
+  );
+
+  return Number(rows[0]?.total || 0) > 0;
+}
 
 export async function initDatabase() {
   const bootstrapPool = mysql.createPool({
-    host: DB_HOST,
-    port: DB_PORT,
-    user: DB_USER,
-    password: DB_PASSWORD,
-    waitForConnections: true,
+    ...databaseConfig,
     connectionLimit: 2,
-    queueLimit: 0,
   });
 
   await bootstrapPool.query(`CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\``);
@@ -57,11 +73,13 @@ export async function initDatabase() {
     MODIFY theme ENUM('night','aurora','daylight') NOT NULL DEFAULT 'night'
   `);
 
-  await pool.query(`
-    ALTER TABLE users
-    ADD COLUMN IF NOT EXISTS role ENUM('user','admin') NOT NULL DEFAULT 'user'
-    AFTER plan
-  `);
+  if (!(await columnExists("users", "role"))) {
+    await pool.query(`
+      ALTER TABLE users
+      ADD COLUMN role ENUM('user','admin') NOT NULL DEFAULT 'user'
+      AFTER plan
+    `);
+  }
 
   if (ADMIN_EMAILS.length > 0) {
     await pool.query(
