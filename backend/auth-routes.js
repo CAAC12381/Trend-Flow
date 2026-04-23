@@ -25,6 +25,22 @@ function createToken() {
   return crypto.randomBytes(48).toString("hex");
 }
 
+function parseJsonField(value, fallback = {}) {
+  if (!value) {
+    return fallback;
+  }
+
+  if (typeof value === "object") {
+    return value;
+  }
+
+  try {
+    return JSON.parse(value);
+  } catch {
+    return fallback;
+  }
+}
+
 function roleForEmail(email, fallback = "user") {
   return ADMIN_EMAILS.includes(String(email || "").trim().toLowerCase())
     ? "admin"
@@ -118,8 +134,8 @@ async function buildAuthResponse(userId) {
       accountStatus: user.account_status,
       language: user.language,
       theme: user.theme,
-      notifications: prefRow ? JSON.parse(prefRow.notifications_json) : {},
-      privacy: prefRow ? JSON.parse(prefRow.privacy_json) : {},
+      notifications: parseJsonField(prefRow?.notifications_json),
+      privacy: parseJsonField(prefRow?.privacy_json),
     },
   };
 }
@@ -512,8 +528,8 @@ export function createAuthRouter() {
           accountStatus: session.account_status,
           language: session.language,
           theme: session.theme,
-          notifications: prefRow ? JSON.parse(prefRow.notifications_json) : {},
-          privacy: prefRow ? JSON.parse(prefRow.privacy_json) : {},
+          notifications: parseJsonField(prefRow?.notifications_json),
+          privacy: parseJsonField(prefRow?.privacy_json),
         },
       });
     } catch (error) {
