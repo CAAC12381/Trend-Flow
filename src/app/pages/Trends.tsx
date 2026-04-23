@@ -314,21 +314,21 @@ export default function Trends() {
           return (
           <button
             key={topic.id}
-            className={`rounded-[24px] border bg-gradient-to-br p-5 text-left transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/[0.08] ${palette.border} ${palette.bg} ${palette.glow}`}
+            className={`min-w-0 rounded-[24px] border bg-gradient-to-br p-4 text-left transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/[0.08] sm:p-5 ${palette.border} ${palette.bg} ${palette.glow}`}
             onClick={() => setSelectedTrend(topic)}
             type="button"
           >
-            <div className="mb-3 flex items-start justify-between gap-4">
-              <div>
-                <div className="mb-2 flex items-center gap-2">
+            <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+              <div className="min-w-0">
+                <div className="mb-2 flex min-w-0 items-start gap-2">
                   <div className={`rounded-xl bg-gradient-to-br p-2 ${palette.icon} ${palette.iconGlow}`}>
                     <Hash className="h-4 w-4 text-white" />
                   </div>
-                  <span className={`bg-gradient-to-r bg-clip-text text-lg font-semibold text-transparent ${palette.hashtag}`}>
+                  <span className={`min-w-0 break-words bg-gradient-to-r bg-clip-text text-base font-semibold leading-snug text-transparent sm:text-lg ${palette.hashtag}`}>
                     {topic.hashtag}
                   </span>
 
-                  {topic.highlight && <Flame className="h-4 w-4 text-orange-400" />}
+                  {topic.highlight && <Flame className="mt-1 h-4 w-4 shrink-0 text-orange-400" />}
                 </div>
 
                 <div className="text-xs text-white/50">
@@ -361,12 +361,12 @@ export default function Trends() {
                 )}
               </div>
 
-              <div className="text-right">
+              <div className="flex shrink-0 items-center gap-2 text-left sm:block sm:text-right">
                 <div className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${palette.growthBg} ${palette.growthText}`}>
                   +{topic.growth}%
                 </div>
-                <div className="mt-2 text-xs text-yellow-300">{topic.status}</div>
-                <div className="mt-1 text-xs text-blue-300">
+                <div className="text-xs text-yellow-300 sm:mt-2">{topic.status}</div>
+                <div className="text-xs text-blue-300 sm:mt-1">
                   Score: {topic.score.toLocaleString()}
                 </div>
               </div>

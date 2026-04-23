@@ -133,9 +133,9 @@ export default function Settings() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-[28px] border border-white/20 bg-gradient-to-br from-white/[0.12] to-white/[0.06] p-6 shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-2xl">
-        <div className="flex items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
+      <div className="rounded-[28px] border border-white/20 bg-gradient-to-br from-white/[0.12] to-white/[0.06] p-4 shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-2xl sm:p-6">
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+          <div className="flex min-w-0 items-center gap-4">
             <div className="relative h-20 w-20">
               <div className="h-20 w-20 rounded-full border-4 border-white/20 bg-gradient-to-br from-[#ec4899] to-[#8b5cf6] shadow-[0_0_24px_rgba(236,72,153,0.4)]" />
               {draftProfile.avatar && (
@@ -146,11 +146,11 @@ export default function Settings() {
                 />
               )}
             </div>
-            <div>
-              <h2 className="text-2xl font-semibold text-white/95">
+            <div className="min-w-0">
+              <h2 className="truncate text-xl font-semibold text-white/95 sm:text-2xl">
                 {preferences.profile.username}
               </h2>
-              <p className="mt-1 text-sm text-white/50">
+              <p className="mt-1 break-all text-sm text-white/50">
                 {preferences.profile.email}
               </p>
               <p className="mt-1 text-xs text-white/40">
@@ -162,9 +162,9 @@ export default function Settings() {
             </div>
           </div>
 
-          <div className="flex flex-col items-end gap-2">
+          <div className="flex flex-col gap-2 sm:items-end">
             <button
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#a78bfa] to-[#3b82f6] px-6 py-3 text-sm font-medium text-white shadow-[0_0_20px_rgba(147,51,234,0.4)] disabled:opacity-70"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#a78bfa] to-[#3b82f6] px-6 py-3 text-sm font-medium text-white shadow-[0_0_20px_rgba(147,51,234,0.4)] disabled:opacity-70 sm:w-auto"
               disabled={isSaving}
               onClick={() => {
                 void saveProfile();
@@ -185,7 +185,7 @@ export default function Settings() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div className="rounded-[28px] border border-white/20 bg-gradient-to-br from-white/[0.12] to-white/[0.06] p-6 shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-2xl">
+        <div className="rounded-[28px] border border-white/20 bg-gradient-to-br from-white/[0.12] to-white/[0.06] p-4 shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-2xl sm:p-6">
           <div className="mb-6 flex items-center gap-3">
             <div className="rounded-xl bg-gradient-to-br from-[#a78bfa] to-[#3b82f6] p-2.5 shadow-[0_0_20px_rgba(147,51,234,0.4)]">
               <User className="h-6 w-6 text-white" />
@@ -194,14 +194,14 @@ export default function Settings() {
           </div>
 
           <div className="space-y-4">
-            <div className="flex items-center justify-between rounded-[20px] border border-white/10 bg-white/[0.04] p-4">
-              <div>
+            <div className="flex flex-col gap-3 rounded-[20px] border border-white/10 bg-white/[0.04] p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="min-w-0">
                 <div className="text-sm font-medium text-white/90">
                   {copy.editPhoto}
                 </div>
                 <div className="mt-1 text-xs text-white/50">PNG, JPG o WEBP</div>
               </div>
-              <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-white/[0.06] px-4 py-2 text-sm text-white/85">
+              <label className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.06] px-4 py-2 text-sm text-white/85 sm:justify-start">
                 <Upload className="h-4 w-4" />
                 {copy.editPhoto}
                 <input
@@ -261,7 +261,7 @@ export default function Settings() {
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-[28px] border border-white/20 bg-gradient-to-br from-white/[0.12] to-white/[0.06] p-6 shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-2xl">
+          <div className="rounded-[28px] border border-white/20 bg-gradient-to-br from-white/[0.12] to-white/[0.06] p-4 shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-2xl sm:p-6">
             <div className="mb-6 flex items-center gap-3">
               <div className="rounded-xl bg-gradient-to-br from-[#ec4899] to-[#8b5cf6] p-2.5 shadow-[0_0_20px_rgba(236,72,153,0.4)]">
                 <Palette className="h-6 w-6 text-white" />
@@ -300,7 +300,7 @@ export default function Settings() {
               ))}
             </div>
 
-            <div className="mt-6 flex items-center justify-between rounded-[20px] border border-white/10 bg-white/[0.04] p-4">
+            <div className="mt-6 flex flex-col gap-3 rounded-[20px] border border-white/10 bg-white/[0.04] p-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-3">
                 <Globe className="h-5 w-5 text-white" />
                 <span className="text-sm text-white/90">{copy.language}</span>
@@ -324,7 +324,7 @@ export default function Settings() {
             </div>
           </div>
 
-          <div className="rounded-[28px] border border-white/20 bg-gradient-to-br from-white/[0.12] to-white/[0.06] p-6 shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-2xl">
+          <div className="rounded-[28px] border border-white/20 bg-gradient-to-br from-white/[0.12] to-white/[0.06] p-4 shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-2xl sm:p-6">
             <div className="mb-6 flex items-center gap-3">
               <div className="rounded-xl bg-gradient-to-br from-[#f97316] to-[#ef4444] p-2.5 shadow-[0_0_20px_rgba(249,115,22,0.4)]">
                 <Bell className="h-6 w-6 text-white" />
@@ -377,7 +377,7 @@ export default function Settings() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div className="rounded-[28px] border border-white/20 bg-gradient-to-br from-white/[0.12] to-white/[0.06] p-6 shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-2xl">
+        <div className="rounded-[28px] border border-white/20 bg-gradient-to-br from-white/[0.12] to-white/[0.06] p-4 shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-2xl sm:p-6">
           <div className="mb-6 flex items-center gap-3">
             <div className="rounded-xl bg-gradient-to-br from-[#06b6d4] to-[#84cc16] p-2.5 shadow-[0_0_20px_rgba(6,182,212,0.4)]">
               <Shield className="h-6 w-6 text-white" />
@@ -418,7 +418,7 @@ export default function Settings() {
           </div>
         </div>
 
-        <div className="rounded-[28px] border border-white/20 bg-gradient-to-br from-white/[0.12] to-white/[0.06] p-6 shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-2xl">
+        <div className="rounded-[28px] border border-white/20 bg-gradient-to-br from-white/[0.12] to-white/[0.06] p-4 shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-2xl sm:p-6">
           <div className="mb-6 flex items-center gap-3">
             <div className="rounded-xl bg-gradient-to-br from-[#f97316] to-[#ef4444] p-2.5 shadow-[0_0_20px_rgba(249,115,22,0.4)]">
               <CreditCard className="h-6 w-6 text-white" />

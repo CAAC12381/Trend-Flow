@@ -124,7 +124,7 @@ export default function Dashboard() {
             </span>
           </div>
           <div className="mb-1 text-sm font-medium text-white/60">{copy.totalMentions}</div>
-          <div className="bg-gradient-to-br from-[#06b6d4] via-[#22d3ee] to-[#84cc16] bg-clip-text text-4xl font-bold text-transparent">
+          <div className="bg-gradient-to-br from-[#06b6d4] via-[#22d3ee] to-[#84cc16] bg-clip-text text-3xl font-bold text-transparent sm:text-4xl">
             {formatCompactNumber(summary.metrics.totalMentions)}
           </div>
         </div>
@@ -139,7 +139,7 @@ export default function Dashboard() {
             </span>
           </div>
           <div className="mb-1 text-sm font-medium text-white/60">{copy.trendLeader}</div>
-          <div className="bg-gradient-to-br from-[#ec4899] via-[#a855f7] to-[#8b5cf6] bg-clip-text text-4xl font-bold text-transparent">
+          <div className="bg-gradient-to-br from-[#ec4899] via-[#a855f7] to-[#8b5cf6] bg-clip-text text-3xl font-bold text-transparent sm:text-4xl">
             {topTrend ? topTrend.estado : "No data"}
           </div>
         </div>
@@ -154,7 +154,7 @@ export default function Dashboard() {
             </span>
           </div>
           <div className="mb-1 text-sm font-medium text-white/60">{copy.averageGrowth}</div>
-          <div className="bg-gradient-to-br from-[#a78bfa] via-[#60a5fa] to-[#3b82f6] bg-clip-text text-4xl font-bold text-transparent">
+          <div className="bg-gradient-to-br from-[#a78bfa] via-[#60a5fa] to-[#3b82f6] bg-clip-text text-3xl font-bold text-transparent sm:text-4xl">
             +{averageGrowth}%
           </div>
         </div>
@@ -169,7 +169,7 @@ export default function Dashboard() {
             </span>
           </div>
           <div className="mb-1 text-sm font-medium text-white/60">{copy.estimatedInteractions}</div>
-          <div className="bg-gradient-to-br from-[#f97316] via-[#fb923c] to-[#ef4444] bg-clip-text text-4xl font-bold text-transparent">
+          <div className="bg-gradient-to-br from-[#f97316] via-[#fb923c] to-[#ef4444] bg-clip-text text-3xl font-bold text-transparent sm:text-4xl">
             {formatCompactNumber(Math.round(summary.metrics.totalMentions * 0.18))}
           </div>
         </div>
@@ -177,14 +177,14 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="rounded-[28px] border border-white/20 bg-gradient-to-br from-white/[0.12] to-white/[0.06] p-6 shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-2xl">
-          <div className="mb-6 flex items-center justify-between">
-            <div className="flex items-center gap-3">
+          <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex min-w-0 items-center gap-3">
               <div className="rounded-xl bg-gradient-to-br from-[#a78bfa] to-[#3b82f6] p-2.5 shadow-[0_0_20px_rgba(147,51,234,0.4)]">
                 <TrendingUp className="h-6 w-6 text-white" />
               </div>
               <div>
                 <h2 className="text-xl font-semibold text-white/95">{copy.featuredTrend}</h2>
-                <p className="text-sm text-white/50">
+                <p className="break-words text-sm text-white/50">
                   {topTrend ? topTrend.palabra : "Waiting backend data"}
                 </p>
               </div>

@@ -314,7 +314,7 @@ export function Layout() {
 
   return (
     <div
-      className={`flex h-screen overflow-hidden ${
+      className={`flex h-screen flex-col overflow-hidden md:flex-row ${
         preferences.theme === "daylight"
           ? "bg-[radial-gradient(circle_at_top_left,_rgba(56,189,248,0.18),_transparent_30%),radial-gradient(circle_at_bottom_right,_rgba(99,102,241,0.14),_transparent_28%),linear-gradient(180deg,#ffffff_0%,#eef6ff_48%,#f8fbff_100%)]"
           : preferences.theme === "aurora"
@@ -328,32 +328,32 @@ export function Layout() {
         <div className="absolute bottom-[-10%] left-[20%] h-[40%] w-[50%] rounded-[100%] bg-gradient-to-tr from-[#3b4c6b]/20 via-[#1a2540]/10 to-transparent blur-[100px]" />
       </div>
 
-      <aside className="sticky top-0 z-10 flex h-screen w-72 shrink-0 flex-col p-6">
-        <div className="flex min-h-0 flex-1 flex-col rounded-[32px] border border-white/20 bg-gradient-to-br from-white/[0.12] to-white/[0.06] p-6 shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-2xl">
-            <div className="mb-10">
+      <aside className="sticky top-0 z-30 flex w-full shrink-0 flex-col p-3 md:h-screen md:w-72 md:p-6">
+        <div className="flex min-h-0 flex-col rounded-[24px] border border-white/20 bg-gradient-to-br from-white/[0.12] to-white/[0.06] p-3 shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-2xl md:flex-1 md:rounded-[32px] md:p-6">
+            <div className="mb-3 md:mb-10">
               <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] shadow-[0_0_24px_rgba(96,165,250,0.18)] backdrop-blur-xl">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] shadow-[0_0_24px_rgba(96,165,250,0.18)] backdrop-blur-xl md:h-11 md:w-11">
                   <img
                     alt="TrendFlow logo"
-                    className="h-8 w-auto object-contain drop-shadow-[0_0_16px_rgba(168,85,247,0.28)]"
+                    className="h-7 w-auto object-contain drop-shadow-[0_0_16px_rgba(168,85,247,0.28)] md:h-8"
                     src={sidebarLogoUrl}
                   />
                 </div>
-                <h1 className="text-2xl font-light tracking-tight text-white">
+                <h1 className="text-xl font-light tracking-tight text-white md:text-2xl">
                   <span className="bg-gradient-to-r from-[#a78bfa] via-[#60a5fa] to-[#3b82f6] bg-clip-text font-semibold text-transparent">
                     TrendFlow
                   </span>
                 </h1>
               </div>
-              <p className="mt-2 text-xs text-white/50">Social Analytics Platform</p>
+              <p className="mt-1 text-[11px] text-white/50 md:mt-2 md:text-xs">Social Analytics Platform</p>
             </div>
 
-          <nav className="scrollbar-none min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
+          <nav className="scrollbar-none flex gap-2 overflow-x-auto pb-1 md:min-h-0 md:flex-1 md:flex-col md:space-y-2 md:overflow-y-auto md:pr-1">
             {navItems.map((item) => (
               <NavLink
                 key={item.to}
                 className={({ isActive }) =>
-                  `group flex items-center gap-3 rounded-2xl border px-4 py-3.5 transition-all ${
+                  `group flex shrink-0 items-center gap-2 rounded-2xl border px-3 py-2.5 transition-all md:gap-3 md:px-4 md:py-3.5 ${
                     isActive
                       ? "border-[#a78bfa]/30 bg-gradient-to-r from-[#a78bfa]/20 to-[#3b82f6]/20 shadow-[0_0_20px_rgba(147,51,234,0.3)]"
                       : "border-transparent hover:bg-white/[0.05]"
@@ -371,10 +371,10 @@ export function Layout() {
                           : "bg-white/[0.05] group-hover:bg-white/[0.1]"
                       }`}
                     >
-                      <item.icon className="h-5 w-5 text-white" />
+                      <item.icon className="h-4 w-4 text-white md:h-5 md:w-5" />
                     </div>
                     <span
-                      className={`font-medium ${
+                      className={`text-sm font-medium md:text-base ${
                         isActive ? "text-white" : "text-white/60 group-hover:text-white/80"
                       }`}
                     >
@@ -386,7 +386,7 @@ export function Layout() {
             ))}
           </nav>
 
-          <div className="mt-auto border-t border-white/10 pt-6">
+          <div className="mt-3 hidden border-t border-white/10 pt-6 md:block">
             <div className="flex cursor-pointer items-center gap-3 rounded-2xl bg-white/[0.05] px-4 py-3 transition-all hover:bg-white/[0.08]">
               {preferences.profile.avatar ? (
                 <img
@@ -413,10 +413,10 @@ export function Layout() {
         </div>
       </aside>
 
-      <main className="relative z-10 h-screen flex-1 overflow-y-auto p-6">
-        <header className="mb-8 flex items-center justify-between">
+      <main className="relative z-10 min-h-0 flex-1 overflow-y-auto px-3 pb-6 pt-1 md:h-screen md:p-6">
+        <header className="mb-5 flex flex-col gap-4 md:mb-8 md:flex-row md:items-center md:justify-between">
           <div>
-            <h2 className="text-3xl font-light tracking-tight text-white">
+            <h2 className="text-2xl font-light tracking-tight text-white md:text-3xl">
               {copy.welcome}
             </h2>
             <p className="mt-1 text-sm text-white/50">
@@ -432,10 +432,10 @@ export function Layout() {
             </p>
           </div>
 
-          <div className="relative flex items-center gap-3">
+          <div className="relative flex items-center gap-2 md:gap-3">
             <div className="relative">
               <button
-                className="flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-white/[0.08] shadow-[0_0_20px_rgba(168,85,247,0.15)] transition-all hover:shadow-[0_0_30px_rgba(168,85,247,0.3)] backdrop-blur-xl"
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-white/[0.08] shadow-[0_0_20px_rgba(168,85,247,0.15)] transition-all hover:shadow-[0_0_30px_rgba(168,85,247,0.3)] backdrop-blur-xl md:h-12 md:w-12"
                 onClick={() => {
                   setIsSearchOpen((value) => !value);
                   setIsNotificationsOpen(false);
@@ -446,7 +446,7 @@ export function Layout() {
               </button>
 
               {isSearchOpen && (
-                <div className="absolute right-0 top-16 z-20 w-[380px] rounded-[24px] border border-white/20 bg-[#151726]/95 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-2xl">
+                <div className="fixed inset-x-3 top-28 z-40 rounded-[24px] border border-white/20 bg-[#151726]/95 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-2xl md:absolute md:inset-auto md:right-0 md:top-16 md:w-[380px]">
                   <div className="mb-3 text-sm font-medium text-white/90">
                     {copy.search}
                   </div>
@@ -513,7 +513,7 @@ export function Layout() {
 
             <div className="relative">
               <button
-                className="relative flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-white/[0.08] shadow-[0_0_20px_rgba(168,85,247,0.15)] transition-all hover:shadow-[0_0_30px_rgba(168,85,247,0.3)] backdrop-blur-xl"
+                className="relative flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-white/[0.08] shadow-[0_0_20px_rgba(168,85,247,0.15)] transition-all hover:shadow-[0_0_30px_rgba(168,85,247,0.3)] backdrop-blur-xl md:h-12 md:w-12"
                 onClick={() => {
                   setIsNotificationsOpen((value) => !value);
                   setIsSearchOpen(false);
@@ -527,7 +527,7 @@ export function Layout() {
               </button>
 
               {isNotificationsOpen && (
-                <div className="absolute right-0 top-16 z-20 w-[380px] rounded-[24px] border border-white/20 bg-[#151726]/95 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-2xl">
+                <div className="fixed inset-x-3 top-28 z-40 max-h-[70vh] overflow-y-auto rounded-[24px] border border-white/20 bg-[#151726]/95 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-2xl md:absolute md:inset-auto md:right-0 md:top-16 md:w-[380px]">
                   <div className="mb-3 flex items-center justify-between">
                     <div className="text-sm font-medium text-white/90">
                       {copy.notifications}
@@ -591,7 +591,7 @@ export function Layout() {
             </div>
 
             <button
-              className="inline-flex h-12 items-center gap-2 rounded-full border border-white/20 bg-white/[0.08] px-4 text-sm font-medium text-white/90 shadow-[0_0_20px_rgba(168,85,247,0.15)] transition-all hover:shadow-[0_0_30px_rgba(168,85,247,0.3)] backdrop-blur-xl"
+              className="ml-auto inline-flex h-11 items-center gap-2 rounded-full border border-white/20 bg-white/[0.08] px-3 text-sm font-medium text-white/90 shadow-[0_0_20px_rgba(168,85,247,0.15)] transition-all hover:shadow-[0_0_30px_rgba(168,85,247,0.3)] backdrop-blur-xl md:h-12 md:px-4"
               onClick={async () => {
                 await logout();
                 navigate("/login", { replace: true });
@@ -599,7 +599,7 @@ export function Layout() {
               type="button"
             >
               <LogOut className="h-4 w-4" />
-              {copy.logout}
+              <span className="hidden sm:inline">{copy.logout}</span>
             </button>
           </div>
         </header>

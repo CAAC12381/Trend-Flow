@@ -87,18 +87,18 @@ export default function Landing() {
       </div>
 
       <header className="sticky top-0 z-30 border-b border-white/8 bg-[#050817]/62 backdrop-blur-2xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 md:px-8">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 md:px-8 md:py-4">
           <Link className="flex items-center gap-3" to="/">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/12 bg-white/[0.08] shadow-[0_0_34px_rgba(34,211,238,0.22)]">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-white/12 bg-white/[0.08] shadow-[0_0_34px_rgba(34,211,238,0.22)] md:h-12 md:w-12">
               <img
                 alt="TrendFlow logo"
-                className="h-9 w-auto object-contain drop-shadow-[0_0_18px_rgba(168,85,247,0.35)]"
+                className="h-7 w-auto object-contain drop-shadow-[0_0_18px_rgba(168,85,247,0.35)] md:h-9"
                 src={logoUrl}
               />
             </div>
             <div>
-              <div className="text-lg font-semibold tracking-tight">TrendFlow</div>
-              <div className="text-[10px] uppercase tracking-[0.36em] text-cyan-100/46">
+              <div className="text-base font-semibold tracking-tight md:text-lg">TrendFlow</div>
+              <div className="hidden text-[10px] uppercase tracking-[0.36em] text-cyan-100/46 sm:block">
                 Trend intelligence
               </div>
             </div>
@@ -116,15 +116,15 @@ export default function Landing() {
             </a>
           </nav>
 
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             <Link
-              className="rounded-full border border-white/14 bg-white/[0.06] px-4 py-2 text-sm font-medium text-white/82 transition hover:bg-white/[0.12] hover:text-white"
+              className="rounded-full border border-white/14 bg-white/[0.06] px-3 py-2 text-xs font-medium text-white/82 transition hover:bg-white/[0.12] hover:text-white sm:text-sm md:px-4"
               to="/login"
             >
-              Iniciar sesion
+              Entrar
             </Link>
             <Link
-              className="rounded-full bg-gradient-to-r from-[#f472b6] via-[#a78bfa] to-[#22d3ee] px-4 py-2 text-sm font-bold text-white shadow-[0_0_34px_rgba(168,85,247,0.42)] transition hover:scale-[1.03]"
+              className="rounded-full bg-gradient-to-r from-[#f472b6] via-[#a78bfa] to-[#22d3ee] px-3 py-2 text-xs font-bold text-white shadow-[0_0_34px_rgba(168,85,247,0.42)] transition hover:scale-[1.03] sm:text-sm md:px-4"
               to="/login?view=register"
             >
               Registrarse
@@ -134,7 +134,7 @@ export default function Landing() {
       </header>
 
       <main className="relative z-10">
-        <section className="mx-auto grid min-h-[calc(100vh-80px)] max-w-7xl items-center gap-12 px-5 py-14 md:px-8 lg:grid-cols-[0.94fr_1.06fr]">
+        <section className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-10 md:min-h-[calc(100vh-80px)] md:px-8 md:py-14 lg:grid-cols-[0.94fr_1.06fr]">
           <div className="relative">
             <div className="absolute -left-14 -top-12 hidden h-40 w-40 rounded-full border border-cyan-300/10 bg-cyan-300/[0.04] blur-sm lg:block" />
             <div className="inline-flex items-center gap-2 rounded-full border border-cyan-200/18 bg-cyan-200/10 px-4 py-2 text-xs uppercase tracking-[0.24em] text-cyan-100 shadow-[0_0_30px_rgba(34,211,238,0.12)]">
@@ -142,14 +142,14 @@ export default function Landing() {
               Radar social inteligente
             </div>
 
-            <h1 className="mt-7 max-w-4xl text-5xl font-light leading-[0.92] tracking-[-0.055em] text-white md:text-7xl xl:text-[88px]">
+            <h1 className="mt-7 max-w-4xl text-5xl font-light leading-[0.95] tracking-[-0.055em] text-white sm:text-6xl md:text-7xl xl:text-[88px]">
               Detecta lo viral
               <span className="block bg-gradient-to-r from-[#22d3ee] via-[#a78bfa] to-[#f472b6] bg-clip-text font-semibold text-transparent">
                 antes del ruido.
               </span>
             </h1>
 
-            <p className="mt-7 max-w-2xl text-lg leading-8 text-white/64">
+            <p className="mt-6 max-w-2xl text-base leading-7 text-white/64 md:mt-7 md:text-lg md:leading-8">
               Una plataforma visual para monitorear tendencias, explicar senales
               tempranas y convertir datos sociales en decisiones de contenido,
               marketing e investigacion.
@@ -172,18 +172,18 @@ export default function Landing() {
               </Link>
             </div>
 
-            <div className="mt-10 grid max-w-2xl grid-cols-3 gap-3">
+            <div className="mt-8 grid max-w-2xl grid-cols-3 gap-2 sm:gap-3 md:mt-10">
               {[
                 ["5+", "Fuentes"],
                 ["24/7", "Monitoreo"],
                 ["IA", "Asistente"],
               ].map(([value, label]) => (
                 <div
-                  className="rounded-3xl border border-white/12 bg-white/[0.07] p-4 shadow-[0_18px_45px_rgba(0,0,0,0.22)] backdrop-blur-xl"
+                  className="rounded-2xl border border-white/12 bg-white/[0.07] p-3 shadow-[0_18px_45px_rgba(0,0,0,0.22)] backdrop-blur-xl sm:rounded-3xl sm:p-4"
                   key={label}
                 >
-                  <div className="text-3xl font-semibold">{value}</div>
-                  <div className="mt-1 text-xs uppercase tracking-[0.2em] text-white/44">
+                  <div className="text-2xl font-semibold sm:text-3xl">{value}</div>
+                  <div className="mt-1 text-[10px] uppercase tracking-[0.14em] text-white/44 sm:text-xs sm:tracking-[0.2em]">
                     {label}
                   </div>
                 </div>
@@ -216,7 +216,7 @@ export default function Landing() {
               </div>
             </div>
 
-            <div className="relative overflow-hidden rounded-[42px] border border-white/16 bg-gradient-to-br from-white/[0.17] to-white/[0.055] p-4 shadow-[0_34px_110px_rgba(0,0,0,0.5)] backdrop-blur-2xl">
+            <div className="relative overflow-hidden rounded-[30px] border border-white/16 bg-gradient-to-br from-white/[0.17] to-white/[0.055] p-3 shadow-[0_34px_110px_rgba(0,0,0,0.5)] backdrop-blur-2xl sm:rounded-[42px] sm:p-4">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(34,211,238,0.2),transparent_26%),radial-gradient(circle_at_86%_0%,rgba(244,114,182,0.22),transparent_30%),radial-gradient(circle_at_50%_100%,rgba(74,222,128,0.12),transparent_32%)]" />
               <div className="relative mb-4 flex items-center justify-between rounded-3xl border border-white/10 bg-[#0d1426]/80 px-4 py-3">
                 <div className="flex items-center gap-2">
@@ -246,28 +246,28 @@ export default function Landing() {
                     </div>
                   </div>
 
-                  <div className="mt-6 h-36 overflow-hidden rounded-3xl bg-[linear-gradient(120deg,rgba(59,130,246,0.24),rgba(168,85,247,0.2)),repeating-linear-gradient(90deg,transparent_0_44px,rgba(255,255,255,0.06)_45px_46px)]">
+                  <div className="mt-6 h-28 overflow-hidden rounded-3xl bg-[linear-gradient(120deg,rgba(59,130,246,0.24),rgba(168,85,247,0.2)),repeating-linear-gradient(90deg,transparent_0_44px,rgba(255,255,255,0.06)_45px_46px)] sm:h-36">
                     <div className="h-full rounded-3xl bg-[radial-gradient(circle_at_78%_18%,rgba(34,211,238,0.48),transparent_18%),radial-gradient(circle_at_25%_78%,rgba(244,114,182,0.25),transparent_22%),linear-gradient(162deg,transparent_0_42%,rgba(96,165,250,0.28)_43%,rgba(168,85,247,0.48)_56%,rgba(34,211,238,0.36)_70%,transparent_71%)]" />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3 sm:gap-4">
                   <div className="rounded-[26px] border border-white/12 bg-white/[0.08] p-4">
                     <Globe2 className="h-6 w-6 text-cyan-200" />
-                    <div className="mt-4 text-3xl font-semibold">26.2M</div>
+                    <div className="mt-4 text-2xl font-semibold sm:text-3xl">26.2M</div>
                     <div className="text-xs text-white/46">Menciones totales</div>
                   </div>
                   <div className="rounded-[26px] border border-white/12 bg-white/[0.08] p-4">
                     <Search className="h-6 w-6 text-fuchsia-200" />
-                    <div className="mt-4 text-3xl font-semibold">+189%</div>
+                    <div className="mt-4 text-2xl font-semibold sm:text-3xl">+189%</div>
                     <div className="text-xs text-white/46">Crecimiento promedio</div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-3 gap-2 sm:gap-3">
                   {["YouTube", "Reddit", "News"].map((source, index) => (
                     <div
-                      className="rounded-2xl border border-white/10 bg-[#111a32]/72 px-3 py-3"
+                      className="rounded-2xl border border-white/10 bg-[#111a32]/72 px-2 py-3 sm:px-3"
                       key={source}
                     >
                       <div className="text-xs text-white/42">{source}</div>
@@ -292,7 +292,7 @@ export default function Landing() {
             <div className="flex min-w-max animate-[landing-scroll_24s_linear_infinite] gap-4">
               {[...showcaseCards, ...showcaseCards].map((card, index) => (
                 <div
-                  className="w-96 shrink-0 rounded-[30px] border border-white/12 bg-[#0d1426]/80 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.28)] backdrop-blur-xl"
+                  className="w-72 shrink-0 rounded-[26px] border border-white/12 bg-[#0d1426]/80 p-5 shadow-[0_20px_60px_rgba(0,0,0,0.28)] backdrop-blur-xl sm:w-96 sm:rounded-[30px] sm:p-6"
                   key={`${card.title}-${index}`}
                 >
                   <div className={`h-2 w-24 rounded-full bg-gradient-to-r ${card.accent}`} />
@@ -304,7 +304,7 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-5 py-24 md:px-8" id="funciones">
+        <section className="mx-auto max-w-7xl px-4 py-16 md:px-8 md:py-24" id="funciones">
           <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <div className="max-w-3xl">
               <div className="text-xs uppercase tracking-[0.28em] text-cyan-200/70">
@@ -342,7 +342,7 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-5 pb-24 md:px-8" id="metodologia">
+        <section className="mx-auto max-w-7xl px-4 pb-16 md:px-8 md:pb-24" id="metodologia">
           <div className="overflow-hidden rounded-[42px] border border-white/14 bg-[radial-gradient(circle_at_12%_18%,rgba(34,211,238,0.2),transparent_30%),radial-gradient(circle_at_88%_14%,rgba(244,114,182,0.18),transparent_34%),radial-gradient(circle_at_54%_100%,rgba(74,222,128,0.13),transparent_35%),linear-gradient(135deg,rgba(255,255,255,0.12),rgba(255,255,255,0.045))] p-8 shadow-[0_30px_90px_rgba(0,0,0,0.34)] backdrop-blur-2xl md:p-10">
             <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
               <div>

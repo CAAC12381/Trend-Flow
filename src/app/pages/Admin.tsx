@@ -114,14 +114,14 @@ export default function Admin() {
 
   return (
     <div className="space-y-6">
-      <section className="overflow-hidden rounded-[32px] border border-white/20 bg-gradient-to-br from-white/[0.14] via-white/[0.08] to-white/[0.04] p-7 shadow-[0_18px_60px_rgba(0,0,0,0.35)] backdrop-blur-2xl">
+      <section className="overflow-hidden rounded-[32px] border border-white/20 bg-gradient-to-br from-white/[0.14] via-white/[0.08] to-white/[0.04] p-4 shadow-[0_18px_60px_rgba(0,0,0,0.35)] backdrop-blur-2xl sm:p-6 lg:p-7">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-cyan-300/30 bg-cyan-300/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-cyan-100">
               <ShieldCheck className="h-4 w-4" />
               Acceso administrador
             </div>
-            <h1 className="text-4xl font-light tracking-tight text-white">
+            <h1 className="text-3xl font-light tracking-tight text-white sm:text-4xl">
               Centro de control de TrendFlow
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-7 text-white/60">
@@ -130,7 +130,7 @@ export default function Admin() {
             </p>
           </div>
 
-          <div className="rounded-[26px] border border-white/15 bg-[#080d1c]/70 p-5">
+          <div className="rounded-[26px] border border-white/15 bg-[#080d1c]/70 p-4 sm:p-5">
             <div className="text-xs uppercase tracking-[0.24em] text-white/35">
               Ultimo snapshot
             </div>
@@ -178,7 +178,7 @@ export default function Admin() {
       </section>
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-        <div className="rounded-[28px] border border-white/20 bg-gradient-to-br from-white/[0.12] to-white/[0.05] p-6 backdrop-blur-2xl">
+        <div className="rounded-[28px] border border-white/20 bg-gradient-to-br from-white/[0.12] to-white/[0.05] p-4 backdrop-blur-2xl sm:p-6">
           <div className="mb-5 flex items-center gap-3">
             <div className="rounded-2xl bg-gradient-to-br from-[#a78bfa] to-[#3b82f6] p-3">
               <UserRound className="h-5 w-5 text-white" />
@@ -199,9 +199,9 @@ export default function Admin() {
               >
                 <div>
                   <div className="font-semibold text-white">{account.username}</div>
-                  <div className="text-xs text-white/45">{account.email}</div>
+                  <div className="break-all text-xs text-white/45">{account.email}</div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <span
                     className={`rounded-full px-3 py-1 text-xs font-semibold ${
                       account.role === "admin"
@@ -223,7 +223,7 @@ export default function Admin() {
           </div>
         </div>
 
-        <div className="rounded-[28px] border border-white/20 bg-gradient-to-br from-white/[0.12] to-white/[0.05] p-6 backdrop-blur-2xl">
+        <div className="rounded-[28px] border border-white/20 bg-gradient-to-br from-white/[0.12] to-white/[0.05] p-4 backdrop-blur-2xl sm:p-6">
           <div className="mb-5 flex items-center gap-3">
             <div className="rounded-2xl bg-gradient-to-br from-[#22c55e] to-[#06b6d4] p-3">
               <KeyRound className="h-5 w-5 text-white" />
@@ -239,7 +239,7 @@ export default function Admin() {
           <div className="space-y-3">
             {summary.providers.map((provider) => (
               <div
-                className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-3"
+                className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
                 key={provider.label}
               >
                 <div>
@@ -260,7 +260,7 @@ export default function Admin() {
       </section>
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <div className="rounded-[28px] border border-white/20 bg-gradient-to-br from-white/[0.12] to-white/[0.05] p-6 backdrop-blur-2xl">
+        <div className="rounded-[28px] border border-white/20 bg-gradient-to-br from-white/[0.12] to-white/[0.05] p-4 backdrop-blur-2xl sm:p-6">
           <div className="mb-5 flex items-center gap-3">
             <Database className="h-6 w-6 text-cyan-200" />
             <h2 className="text-xl font-semibold text-white">Datos por fuente</h2>
@@ -268,7 +268,7 @@ export default function Admin() {
           <div className="space-y-3">
             {summary.sourceTotals.map((source) => (
               <div key={source.source}>
-                <div className="mb-2 flex items-center justify-between text-sm">
+                <div className="mb-2 flex flex-col gap-1 text-sm sm:flex-row sm:items-center sm:justify-between">
                   <span className="font-semibold capitalize text-white">{source.source}</span>
                   <span className="text-white/55">
                     {formatNumber(source.mentions, locale)} menciones
@@ -292,7 +292,7 @@ export default function Admin() {
           </div>
         </div>
 
-        <div className="rounded-[28px] border border-white/20 bg-gradient-to-br from-white/[0.12] to-white/[0.05] p-6 backdrop-blur-2xl">
+        <div className="rounded-[28px] border border-white/20 bg-gradient-to-br from-white/[0.12] to-white/[0.05] p-4 backdrop-blur-2xl sm:p-6">
           <div className="mb-5 flex items-center gap-3">
             <Search className="h-6 w-6 text-pink-200" />
             <h2 className="text-xl font-semibold text-white">Actividad reciente</h2>

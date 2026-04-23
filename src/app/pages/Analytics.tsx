@@ -924,7 +924,7 @@ export default function Analytics() {
       </div>
 
       <div className="space-y-6">
-        <div className="daylight-crisis-panel rounded-[28px] border border-white/20 bg-gradient-to-br from-[#2a0e17]/90 via-[#1d1324]/92 to-[#151726]/95 p-6 shadow-[0_12px_45px_rgba(0,0,0,0.45)] backdrop-blur-2xl">
+        <div className="daylight-crisis-panel rounded-[28px] border border-white/20 bg-gradient-to-br from-[#2a0e17]/90 via-[#1d1324]/92 to-[#151726]/95 p-4 shadow-[0_12px_45px_rgba(0,0,0,0.45)] backdrop-blur-2xl sm:p-6">
           <div className="mb-6 flex items-center gap-3">
             <div className="rounded-xl bg-gradient-to-br from-[#ef4444] to-[#f97316] p-2.5 shadow-[0_0_24px_rgba(239,68,68,0.35)]">
               <Activity className="h-6 w-6 text-white" />
@@ -947,7 +947,7 @@ export default function Analytics() {
                     key={`${alert.affectedTrend}-${alert.severity}`}
                     className={`daylight-crisis-alert rounded-[22px] border border-white/10 bg-black/20 p-5 ${styles.glow}`}
                   >
-                    <div className="flex items-start justify-between gap-4">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                       <div>
                         <div className="text-base font-semibold text-white/95">{alert.title}</div>
                         <div className="mt-1 text-xs text-white/45">
@@ -976,7 +976,7 @@ export default function Analytics() {
           </div>
         </div>
 
-        <div className="daylight-map-panel rounded-[28px] border border-white/20 bg-gradient-to-br from-[#0f172a]/95 via-[#111827]/92 to-[#172554]/90 p-6 shadow-[0_12px_45px_rgba(0,0,0,0.45)] backdrop-blur-2xl">
+        <div className="daylight-map-panel rounded-[28px] border border-white/20 bg-gradient-to-br from-[#0f172a]/95 via-[#111827]/92 to-[#172554]/90 p-4 shadow-[0_12px_45px_rgba(0,0,0,0.45)] backdrop-blur-2xl sm:p-6">
           <div className="mb-6 flex items-center gap-3">
             <div className="rounded-xl bg-gradient-to-br from-[#06b6d4] to-[#3b82f6] p-2.5 shadow-[0_0_24px_rgba(59,130,246,0.35)]">
               <Globe className="h-6 w-6 text-white" />
@@ -1029,7 +1029,7 @@ export default function Analytics() {
             </label>
           </div>
 
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
               <div>
                 <div className="text-xs uppercase tracking-[0.18em] text-white/40">
                   Estado activo
@@ -1073,7 +1073,7 @@ export default function Analytics() {
               <div className="pointer-events-none absolute -bottom-10 left-1/4 h-24 w-40 rounded-full bg-fuchsia-500/10 blur-3xl" />
               <div
                 ref={geoChartRef}
-                className="h-[360px] w-full"
+                className="h-[260px] w-full sm:h-[320px] lg:h-[360px]"
               />
             </div>
 
@@ -1127,7 +1127,7 @@ export default function Analytics() {
                   className={`rounded-2xl border bg-gradient-to-br px-4 py-3 ${rankStyles.border} ${rankStyles.bg} ${rankStyles.glow}`}
                 >
                   <div className="text-xs text-white/45">Top {index + 1}</div>
-                  <div className="mt-1 flex items-center justify-between gap-3">
+                  <div className="mt-1 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
                     <span className="text-sm font-medium text-white/90">{region.name}</span>
                     <span className={`text-sm font-semibold ${rankStyles.value}`}>{region.value}</span>
                   </div>
@@ -1199,7 +1199,7 @@ export default function Analytics() {
                         onClick={() => openTrendDetail(trend.keyword)}
                         type="button"
                       >
-                        <div className="flex items-start justify-between gap-4">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                           <div>
                             <div className="text-sm font-semibold text-white/92">{trend.keyword}</div>
                             <div className="mt-1 text-xs text-white/50">

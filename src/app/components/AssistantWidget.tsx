@@ -13,6 +13,7 @@ interface WidgetPosition {
 export default function AssistantWidget() {
   const [isHidden, setIsHidden] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [input, setInput] = useState("");
   const [position, setPosition] = useState<WidgetPosition>({ x: 0, y: 0 });
@@ -42,10 +43,28 @@ export default function AssistantWidget() {
   const chatBodyRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    function syncViewport() {
+      setIsMobile(window.innerWidth < 768);
+    }
+
+    syncViewport();
+    window.addEventListener("resize", syncViewport);
+
+    return () => {
+      window.removeEventListener("resize", syncViewport);
+    };
+  }, []);
+
+  useEffect(() => {
     const hidden = localStorage.getItem(STORAGE_HIDDEN) === "1";
     const savedPos = localStorage.getItem(STORAGE_POS);
 
     setIsHidden(hidden);
+
+    if (window.innerWidth < 768) {
+      setIsExpanded(false);
+      return;
+    }
 
     if (savedPos) {
       try {
@@ -170,7 +189,7 @@ export default function AssistantWidget() {
   if (isHidden) {
     return (
       <button
-        className="fixed bottom-6 right-6 z-40 inline-flex h-16 w-16 items-center justify-center rounded-full border border-white/30 bg-gradient-to-br from-[#ec4899] via-[#a855f7] to-[#3b82f6] text-white shadow-[0_0_30px_rgba(168,85,247,0.55)] transition-all hover:scale-105"
+        className="fixed bottom-4 right-4 z-40 inline-flex h-14 w-14 items-center justify-center rounded-full border border-white/30 bg-gradient-to-br from-[#ec4899] via-[#a855f7] to-[#3b82f6] text-white shadow-[0_0_30px_rgba(168,85,247,0.55)] transition-all hover:scale-105 md:bottom-6 md:right-6 md:h-16 md:w-16"
         onClick={() => setIsHidden(false)}
         type="button"
       >
@@ -181,15 +200,22 @@ export default function AssistantWidget() {
 
   return (
     <div
-      className="fixed z-40 w-[340px] rounded-[26px] border border-white/25 bg-[#131528]/95 shadow-[0_20px_70px_rgba(91,33,182,0.45)] backdrop-blur-2xl"
-      style={{
-        left: position.x,
-        top: position.y,
-      }}
+      className="fixed z-40 w-[calc(100vw-24px)] rounded-[24px] border border-white/25 bg-[#131528]/95 shadow-[0_20px_70px_rgba(91,33,182,0.45)] backdrop-blur-2xl md:w-[340px] md:rounded-[26px]"
+      style={
+        isMobile
+          ? { bottom: 12, left: 12 }
+          : {
+              left: position.x,
+              top: position.y,
+            }
+      }
     >
       <div
-        className="flex cursor-move items-center justify-between rounded-t-[26px] border-b border-white/10 bg-gradient-to-r from-[#ec4899]/30 via-[#a855f7]/30 to-[#3b82f6]/30 px-4 py-3"
+        className="flex cursor-default items-center justify-between rounded-t-[24px] border-b border-white/10 bg-gradient-to-r from-[#ec4899]/30 via-[#a855f7]/30 to-[#3b82f6]/30 px-4 py-3 md:cursor-move md:rounded-t-[26px]"
         onMouseDown={(event) => {
+          if (isMobile) {
+            return;
+          }
           dragState.current.dragging = true;
           dragState.current.offsetX = event.clientX - position.x;
           dragState.current.offsetY = event.clientY - position.y;
@@ -223,7 +249,7 @@ export default function AssistantWidget() {
       {isExpanded && (
         <>
           <div
-            className="max-h-[320px] min-h-[240px] space-y-3 overflow-y-auto px-4 py-4"
+            className="max-h-[45vh] min-h-[220px] space-y-3 overflow-y-auto px-4 py-4 md:max-h-[320px] md:min-h-[240px]"
             ref={chatBodyRef}
           >
             <div className="flex flex-wrap gap-2">
