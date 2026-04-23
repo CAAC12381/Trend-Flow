@@ -21,8 +21,37 @@ import {
   normalizeText,
 } from "../utils/validation.js";
 
+const PROVIDER_TIMEOUT_MS = 8000;
+
 export function normalizeKeyword(text = "") {
   return text.replace(/\s+/g, " ").trim();
+}
+
+function parseJsonField(value, fallback = []) {
+  if (!value) {
+    return fallback;
+  }
+
+  if (typeof value === "object") {
+    return value;
+  }
+
+  try {
+    return JSON.parse(value);
+  } catch {
+    return fallback;
+  }
+}
+
+function withTimeout(promise, label, timeoutMs = PROVIDER_TIMEOUT_MS) {
+  let timeoutId;
+  const timeout = new Promise((_, reject) => {
+    timeoutId = setTimeout(() => {
+      reject(new Error(`${label} timed out`));
+    }, timeoutMs);
+  });
+
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timeoutId));
 }
 
 function convertMentions(value) {
@@ -539,11 +568,15 @@ function buildRegionalFallback(trend) {
 
 async function fetchGeoRegions(trend) {
   try {
-    const response = await googleTrends.interestByRegion({
-      keyword: normalizeKeyword(trend?.palabra || ""),
-      geo: "MX",
-      resolution: "REGION",
-    });
+    const response = await withTimeout(
+      googleTrends.interestByRegion({
+        keyword: normalizeKeyword(trend?.palabra || ""),
+        geo: "MX",
+        resolution: "REGION",
+      }),
+      "Google Trends region",
+      5000,
+    );
     const data = JSON.parse(response);
     const geoData = data?.default?.geoMapData || [];
     const liveRegions = geoData
@@ -599,6 +632,7 @@ async function generateAiEnrichment(trend, lifecycle, geoRegions) {
           "HTTP-Referer": "http://localhost:5173",
           "X-Title": "TrendFlow Enrichment",
         },
+        timeout: PROVIDER_TIMEOUT_MS,
       },
     );
 
@@ -649,7 +683,7 @@ async function getTrendEnrichment(trend) {
   const cached = cachedRows[0];
   if (cached) {
     const ageHours = (Date.now() - new Date(cached.updated_at).getTime()) / 3600000;
-    const cachedGeoRegions = cached.geo_regions_json ? JSON.parse(cached.geo_regions_json) : [];
+    const cachedGeoRegions = parseJsonField(cached.geo_regions_json, []);
     if (ageHours < 6 && cachedGeoRegions.length >= 3) {
       return {
         sentiment: cached.sentiment,
@@ -657,9 +691,9 @@ async function getTrendEnrichment(trend) {
         riskLevel: cached.risk_level,
         lifecycle: cached.lifecycle,
         confidenceScore: Number(cached.confidence_score || 50),
-        contextLabels: cached.context_labels_json ? JSON.parse(cached.context_labels_json) : [],
-        actionIdeas: cached.action_ideas_json ? JSON.parse(cached.action_ideas_json) : [],
-        seoKeywords: cached.seo_keywords_json ? JSON.parse(cached.seo_keywords_json) : [],
+        contextLabels: parseJsonField(cached.context_labels_json, []),
+        actionIdeas: parseJsonField(cached.action_ideas_json, []),
+        seoKeywords: parseJsonField(cached.seo_keywords_json, []),
         geoRegions: cachedGeoRegions,
         recommendedFormat: cached.recommended_format,
         summary: cached.summary,
@@ -743,8 +777,8 @@ async function getAudienceDemographics(primarySource, estimatedAge, estimatedGen
   }
 
   return {
-    ageBreakdown: row.age_json ? JSON.parse(row.age_json) : estimatedAge,
-    genderBreakdown: row.gender_json ? JSON.parse(row.gender_json) : estimatedGender,
+    ageBreakdown: parseJsonField(row.age_json, estimatedAge),
+    genderBreakdown: parseJsonField(row.gender_json, estimatedGender),
     audienceMeta: {
       mode: Boolean(row.is_real) ? "real" : "estimated",
       provider: row.provider || "estimated-model",
@@ -809,7 +843,10 @@ async function saveHistorySnapshot(trends) {
 
 export async function getGoogleTrendsList() {
   try {
-    const results = await googleTrends.dailyTrends({ geo: "MX" });
+    const results = await withTimeout(
+      googleTrends.dailyTrends({ geo: "MX" }),
+      "Google Trends",
+    );
     const data = JSON.parse(results);
     return data.default.trendingSearchesDays[0].trendingSearches.slice(0, 10).map((trend) =>
       createTrend({
@@ -832,6 +869,7 @@ export async function getRedditTrendsList() {
   try {
     const response = await axios.get("https://www.reddit.com/r/popular.json", {
       headers: { "User-Agent": "TrendFlowUniversityProject/1.0" },
+      timeout: PROVIDER_TIMEOUT_MS,
     });
     return response.data.data.children.slice(0, 10).map((post) =>
       createTrend({
@@ -851,10 +889,16 @@ export async function getRedditTrendsList() {
 
 export async function getHackerNewsTrendsList() {
   try {
-    const response = await axios.get("https://hacker-news.firebaseio.com/v0/topstories.json");
+    const response = await axios.get("https://hacker-news.firebaseio.com/v0/topstories.json", {
+      timeout: PROVIDER_TIMEOUT_MS,
+    });
     const ids = response.data.slice(0, 10);
     const stories = await Promise.all(
-      ids.map((id) => axios.get(`https://hacker-news.firebaseio.com/v0/item/${id}.json`)),
+      ids.map((id) =>
+        axios.get(`https://hacker-news.firebaseio.com/v0/item/${id}.json`, {
+          timeout: PROVIDER_TIMEOUT_MS,
+        }),
+      ),
     );
     return stories.map((story) =>
       createTrend({
@@ -880,6 +924,7 @@ export async function getNewsTrendsList() {
 
     const response = await axios.get(
       `https://newsapi.org/v2/top-headlines?country=us&pageSize=10&apiKey=${NEWS_API_KEY}`,
+      { timeout: PROVIDER_TIMEOUT_MS },
     );
     return response.data.articles.map((article, index) =>
       createTrend({
@@ -905,6 +950,7 @@ export async function getYoutubeTrendsList() {
 
     const response = await axios.get(
       `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&regionCode=US&maxResults=10&key=${YOUTUBE_API_KEY}`,
+      { timeout: PROVIDER_TIMEOUT_MS },
     );
     return response.data.items.map((video) =>
       createTrend({
@@ -1035,8 +1081,8 @@ export async function getHistoricalTrends(query) {
       estado: row.estado,
       url: row.url,
       embedUrl: row.embed_url,
-      tags: row.tags_json ? JSON.parse(row.tags_json) : [],
-      sparkline: row.sparkline_json ? JSON.parse(row.sparkline_json) : [],
+      tags: parseJsonField(row.tags_json, []),
+      sparkline: parseJsonField(row.sparkline_json, []),
       dataOrigin: {
         narrative: "El historial proviene de snapshots guardados por Trend Flow en la base de datos local.",
         sections: [
