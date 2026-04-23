@@ -276,7 +276,9 @@ export default function AssistantWidget() {
                     : "ml-6 border border-[#3b82f6]/30 bg-gradient-to-r from-[#3b82f6]/25 to-[#a855f7]/25 text-white"
                 }`}
               >
-                {message.content}
+                <div className="whitespace-pre-wrap break-words leading-6">
+                  {message.content}
+                </div>
               </div>
             ))}
 

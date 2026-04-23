@@ -15,58 +15,118 @@ export function buildLocalAssistantReply(lastUserMessage, trends, dashboard, lan
   const prompt = normalizeText(lastUserMessage, 500).toLowerCase();
   const topTrend = trends?.[0];
   const topThree = Array.isArray(trends) ? trends.slice(0, 3) : [];
+  const averageGrowth = dashboard?.metrics?.averageGrowth || 0;
+  const formatTrendLine = (trend) =>
+    `- ${trend.palabra}: ${trend.estado}, +${trend.crecimiento}%`;
 
   const inSpanish = () => {
     if (prompt.includes("guia") || prompt.includes("como funciona")) {
       return [
-        "Trend Flow monitorea temas que estan creciendo en varias plataformas y los ordena para ayudarte a decidir.",
-        "Panel resume menciones, crecimiento y cambios recientes.",
-        "Tendencias te deja abrir cada tema y revisar contexto, riesgo y formato sugerido.",
-        "Analisis separa claramente que datos son reales, estimados o heuristicas.",
-      ].join(" ");
+        "Guia rapida de Trend Flow:",
+        "",
+        "1. Panel",
+        "- Resume menciones, crecimiento y cambios recientes.",
+        "",
+        "2. Tendencias",
+        "- Muestra los temas que mas estan creciendo.",
+        "- Puedes abrir cada uno para ver contexto, riesgo y formato sugerido.",
+        "",
+        "3. Analisis",
+        "- Separa lo real, lo estimado y lo heuristico para que sea defendible.",
+        "",
+        "4. Configuracion",
+        "- Ajusta tema, idioma y preferencias del sistema.",
+      ].join("\n");
     }
 
     if (prompt.includes("grafica") || prompt.includes("mapa")) {
       return [
-        "La grafica sirve para interpretar el comportamiento de una tendencia, no solo verla pasar.",
-        "El mapa indica donde hay mayor intensidad de conversacion.",
-        "Las comparaciones ayudan a decidir si el tema esta subiendo, estabilizado o enfriandose.",
-      ].join(" ");
+        "Lectura rapida:",
+        "",
+        "- La grafica muestra si una tendencia sigue subiendo o se esta enfriando.",
+        "- El mapa indica en que zonas hay mayor intensidad de conversacion.",
+        "- La comparacion temporal ayuda a ver si el tema acelera, se estabiliza o cae.",
+      ].join("\n");
     }
 
     if (prompt.includes("idea") || prompt.includes("contenido")) {
-      const ideas = topThree
-        .map((trend) => `${trend.palabra} en formato ${trend.recommendedFormat || "short_video"}`)
-        .join(", ");
-      return `Yo priorizaria contenido rapido alrededor de: ${ideas}. Enfocate en crecimiento alto y riesgo bajo o medio.`;
+      const ideas = topThree.map((trend) => {
+        const format = trend.recommendedFormat || "short_video";
+        return `- ${trend.palabra}: prueba formato ${format}`;
+      });
+      return [
+        "Ideas de contenido recomendadas:",
+        "",
+        ...ideas,
+        "",
+        "Prioridad:",
+        "- Enfocate primero en crecimiento alto y riesgo bajo o medio.",
+      ].join("\n");
     }
 
-    const summary = topThree
-      .map((trend) => `${trend.palabra} (${trend.estado}, +${trend.crecimiento}%)`)
-      .join(", ");
-    return `Las tendencias mas fuertes ahora son: ${summary}. La lider actual es ${topTrend?.palabra || "sin datos"} y el crecimiento promedio ronda ${dashboard?.metrics?.averageGrowth || 0}%.`;
+    return [
+      "Resumen de tendencias mas fuertes:",
+      "",
+      ...(topThree.length > 0 ? topThree.map(formatTrendLine) : ["- No hay datos suficientes ahora mismo."]),
+      "",
+      `Tendencia lider: ${topTrend?.palabra || "sin datos"}`,
+      `Crecimiento promedio: ${averageGrowth}%`,
+    ].join("\n");
   };
 
   const inEnglish = () => {
     if (prompt.includes("guide") || prompt.includes("how it works")) {
-      return "Trend Flow monitors rising topics across platforms and ranks them to support decisions. Dashboard gives the quick view, Trends explains each topic, and Analytics clarifies what is real, estimated, or heuristic.";
+      return [
+        "Quick guide to Trend Flow:",
+        "",
+        "1. Dashboard",
+        "- Gives the fast view of mentions, growth, and recent movement.",
+        "",
+        "2. Trends",
+        "- Shows the strongest rising topics.",
+        "- Each trend includes context, risk, and suggested format.",
+        "",
+        "3. Analytics",
+        "- Separates real, estimated, and heuristic data clearly.",
+        "",
+        "4. Settings",
+        "- Lets you adjust theme, language, and preferences.",
+      ].join("\n");
     }
 
     if (prompt.includes("chart") || prompt.includes("map")) {
-      return "The chart helps interpret a trend, not just display it. The map shows where conversation is stronger, and the comparison views help decide whether the topic is rising or cooling down.";
+      return [
+        "Quick reading:",
+        "",
+        "- The chart shows whether a trend is still rising or starting to cool down.",
+        "- The map shows where conversation is stronger.",
+        "- Comparison views help decide if the topic is accelerating, stabilizing, or fading.",
+      ].join("\n");
     }
 
     if (prompt.includes("idea") || prompt.includes("content")) {
-      const ideas = topThree
-        .map((trend) => `${trend.palabra} in ${trend.recommendedFormat || "short_video"} format`)
-        .join(", ");
-      return `I would prioritize fast content around: ${ideas}. Focus on high growth and lower risk topics first.`;
+      const ideas = topThree.map((trend) => {
+        const format = trend.recommendedFormat || "short_video";
+        return `- ${trend.palabra}: try ${format} format`;
+      });
+      return [
+        "Recommended content ideas:",
+        "",
+        ...ideas,
+        "",
+        "Priority:",
+        "- Start with high-growth, lower-risk topics first.",
+      ].join("\n");
     }
 
-    const summary = topThree
-      .map((trend) => `${trend.palabra} (${trend.estado}, +${trend.crecimiento}%)`)
-      .join(", ");
-    return `The strongest trends right now are: ${summary}. The current leader is ${topTrend?.palabra || "no data"} and average growth is around ${dashboard?.metrics?.averageGrowth || 0}%.`;
+    return [
+      "Top trend summary:",
+      "",
+      ...(topThree.length > 0 ? topThree.map(formatTrendLine) : ["- Not enough data right now."]),
+      "",
+      `Current leader: ${topTrend?.palabra || "no data"}`,
+      `Average growth: ${averageGrowth}%`,
+    ].join("\n");
   };
 
   return sanitizeAssistantReply(language === "English" ? inEnglish() : inSpanish());

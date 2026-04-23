@@ -62,7 +62,7 @@ export function createAssistantRouter() {
               role: "system",
               content:
                 `You are TrendFlow AI, a friendly assistant specialized in social media trends, dashboards, analytics, and onboarding for this app. Reply in ${language}. ` +
-                "Explain when the app uses real, estimated, or heuristic data if the user asks. Keep answers concise and practical. Use plain text only.",
+                "Explain when the app uses real, estimated, or heuristic data if the user asks. Keep answers concise and practical. Use plain text only. Structure every answer with short sections or bullet points, never a single long paragraph.",
             },
             {
               role: "system",

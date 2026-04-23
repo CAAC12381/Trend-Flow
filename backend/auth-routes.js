@@ -620,16 +620,16 @@ export function createAuthRouter() {
       );
 
       const currentPrefs = (await getUserPreferences(session.user_id)) || {
-        notifications_json: JSON.stringify({}),
-        privacy_json: JSON.stringify({}),
+        notifications_json: {},
+        privacy_json: {},
       };
 
       const mergedNotifications = {
-        ...JSON.parse(currentPrefs.notifications_json),
+        ...parseJsonField(currentPrefs.notifications_json),
         ...(notifications || {}),
       };
       const mergedPrivacy = {
-        ...JSON.parse(currentPrefs.privacy_json),
+        ...parseJsonField(currentPrefs.privacy_json),
         ...(privacy || {}),
       };
 
