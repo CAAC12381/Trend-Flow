@@ -11,8 +11,6 @@ export function sanitizeAssistantReply(text) {
     .replace(/(\d+\.)\s+/g, "\n$1 ")
     .replace(/\s+(Tendencia lider|Lider actual|Crecimiento promedio|Current leader|Average growth|Prioridad|Priority):/g, "\n\n$1:")
     .replace(/^(Resumen[^:]*:|Top trend summary:|Quick guide[^:]*:|Guia rapida[^:]*:|Lectura rapida:|Quick reading:|Ideas de contenido recomendadas:|Recommended content ideas:)/gm, "$1\n")
-    .replace(/^(Resumen[^:]*:|Top trend summary:)\n\s*([^\n-].*)$/m, "$1\n- $2")
-    .replace(/\|/g, " ")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
 }
@@ -22,8 +20,29 @@ export function buildLocalAssistantReply(lastUserMessage, trends, dashboard, lan
   const topTrend = trends?.[0];
   const topThree = Array.isArray(trends) ? trends.slice(0, 3) : [];
   const averageGrowth = dashboard?.metrics?.averageGrowth || 0;
-  const formatTrendLine = (trend) =>
-    `- ${trend.palabra}: ${trend.estado}, +${trend.crecimiento}%`;
+  const shorten = (value, max = 44) => {
+    const text = String(value || "").replace(/\s+/g, " ").trim();
+    if (text.length <= max) {
+      return text;
+    }
+    return `${text.slice(0, max - 1).trim()}...`;
+  };
+  const trendStatusEs = {
+    Viral: "Viral",
+    "En crecimiento": "Subiendo",
+    Estable: "Estable",
+    "En descenso": "Bajando",
+  };
+  const trendStatusEn = {
+    Viral: "Viral",
+    "En crecimiento": "Rising",
+    Estable: "Stable",
+    "En descenso": "Cooling",
+  };
+  const formatTrendLineEs = (trend, index) =>
+    `${index + 1}. ${shorten(trend.palabra)}\n   ${trendStatusEs[trend.estado] || trend.estado} | +${trend.crecimiento}%`;
+  const formatTrendLineEn = (trend, index) =>
+    `${index + 1}. ${shorten(trend.palabra)}\n   ${trendStatusEn[trend.estado] || trend.estado} | +${trend.crecimiento}%`;
 
   const inSpanish = () => {
     if (prompt.includes("guia") || prompt.includes("como funciona")) {
@@ -71,11 +90,13 @@ export function buildLocalAssistantReply(lastUserMessage, trends, dashboard, lan
     }
 
     return [
-      "Resumen de tendencias mas fuertes:",
+      "Resumen rapido:",
       "",
-      ...(topThree.length > 0 ? topThree.map(formatTrendLine) : ["- No hay datos suficientes ahora mismo."]),
+      ...(topThree.length > 0
+        ? topThree.map((trend, index) => formatTrendLineEs(trend, index))
+        : ["- No hay datos suficientes ahora mismo."]),
       "",
-      `Tendencia lider: ${topTrend?.palabra || "sin datos"}`,
+      `Lider: ${shorten(topTrend?.palabra || "sin datos", 36)}`,
       `Crecimiento promedio: ${averageGrowth}%`,
     ].join("\n");
   };
@@ -126,11 +147,13 @@ export function buildLocalAssistantReply(lastUserMessage, trends, dashboard, lan
     }
 
     return [
-      "Top trend summary:",
+      "Quick summary:",
       "",
-      ...(topThree.length > 0 ? topThree.map(formatTrendLine) : ["- Not enough data right now."]),
+      ...(topThree.length > 0
+        ? topThree.map((trend, index) => formatTrendLineEn(trend, index))
+        : ["- Not enough data right now."]),
       "",
-      `Current leader: ${topTrend?.palabra || "no data"}`,
+      `Leader: ${shorten(topTrend?.palabra || "no data", 36)}`,
       `Average growth: ${averageGrowth}%`,
     ].join("\n");
   };
