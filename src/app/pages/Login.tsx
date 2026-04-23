@@ -94,14 +94,16 @@ export default function Login() {
         return;
       }
 
-      googleButtonRef.current.innerHTML = "";
+      const host = document.createElement("div");
+      googleButtonRef.current.replaceChildren(host);
+
       window.google.accounts.id.initialize({
         client_id: GOOGLE_CLIENT_ID,
         callback: ({ credential }) => {
           void handleGoogleCredential(credential);
         },
       });
-      window.google.accounts.id.renderButton(googleButtonRef.current, {
+      window.google.accounts.id.renderButton(host, {
         theme: "outline",
         size: "large",
         shape: "pill",
@@ -131,6 +133,14 @@ export default function Login() {
     if (!existingScript) {
       document.body.appendChild(script);
     }
+
+    return () => {
+      try {
+        googleButtonRef.current?.replaceChildren();
+      } catch {
+        // Google Identity Services mutates this DOM node outside React.
+      }
+    };
   }, [view]);
 
   async function handleSubmit(event: React.FormEvent) {
