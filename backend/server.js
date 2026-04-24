@@ -46,5 +46,8 @@ initDatabase()
   })
   .catch((error) => {
     console.error("Error inicializando base de datos:", error.message || error);
-    process.exit(1);
+    console.warn("Arrancando en modo demo sin base de datos.");
+    app.listen(PORT, () => {
+      console.log(`Servidor corriendo en ${API_BASE_URL} (modo demo)`);
+    });
   });

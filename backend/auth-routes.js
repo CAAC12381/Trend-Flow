@@ -3,6 +3,19 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import axios from "axios";
 import pool from "./db.js";
+import { isDatabaseAvailable } from "./db.js";
+import {
+  clearDemoResetCode,
+  createDemoAuthResponse,
+  deleteDemoSession,
+  getDemoResetCode,
+  getDemoSession,
+  getDemoUser,
+  setDemoPassword,
+  setDemoResetCode,
+  updateDemoUser,
+  validateDemoCredentials,
+} from "./demo-store.js";
 import {
   ensureEnum,
   isValidEmail,
@@ -208,6 +221,15 @@ export async function requireSessionUser(req, res) {
     return null;
   }
 
+  if (!isDatabaseAvailable()) {
+    const session = getDemoSession(token);
+    if (!session) {
+      res.status(401).json({ error: "Invalid session" });
+      return null;
+    }
+    return { session, token };
+  }
+
   const session = await getSession(token);
   if (!session) {
     res.status(401).json({ error: "Invalid session" });
@@ -264,6 +286,18 @@ export function createAuthRouter() {
         return;
       }
 
+      if (!isDatabaseAvailable()) {
+        setDemoPassword(password);
+        res.json(
+          createDemoAuthResponse({
+            username,
+            email,
+            role: roleForEmail(email),
+          }),
+        );
+        return;
+      }
+
       const passwordHash = await bcrypt.hash(password, 10);
 
       const [result] = await pool.query(
@@ -290,6 +324,15 @@ export function createAuthRouter() {
       const password = String(req.body?.password || "");
       if (!email || !password) {
         sendError(res, 400, "Missing email or password");
+        return;
+      }
+
+      if (!isDatabaseAvailable()) {
+        if (!validateDemoCredentials(email, password)) {
+          sendError(res, 401, "Invalid credentials");
+          return;
+        }
+        res.json(createDemoAuthResponse());
         return;
       }
 
@@ -320,6 +363,16 @@ export function createAuthRouter() {
   router.post("/social", async (req, res) => {
     try {
       const social = createSocialIdentity(req.body?.provider);
+
+      if (!isDatabaseAvailable()) {
+        res.json(
+          createDemoAuthResponse({
+            username: social.username,
+            email: roleForEmail(social.email) === "admin" ? social.email : getDemoUser().email,
+          }),
+        );
+        return;
+      }
 
       let [users] = await pool.query(
         "SELECT * FROM users WHERE email = ? LIMIT 1",
@@ -355,6 +408,11 @@ export function createAuthRouter() {
       const credential = normalizeText(req.body?.credential, 5000);
       if (!credential) {
         sendError(res, 400, "Missing Google credential");
+        return;
+      }
+
+      if (!isDatabaseAvailable()) {
+        res.json(createDemoAuthResponse());
         return;
       }
 
@@ -400,6 +458,23 @@ export function createAuthRouter() {
 
       if (!normalizedEmail) {
         sendError(res, 400, "Email is required");
+        return;
+      }
+
+      if (!isDatabaseAvailable()) {
+        if (normalizedEmail !== getDemoUser().email.toLowerCase()) {
+          sendError(res, 404, "No account found with that email");
+          return;
+        }
+
+        const resetCode = createResetCode();
+        setDemoResetCode(resetCode);
+        res.json({
+          ok: true,
+          message:
+            "Codigo de recuperacion generado. En produccion esto se enviaria por correo.",
+          resetCode,
+        });
         return;
       }
 
@@ -459,6 +534,20 @@ export function createAuthRouter() {
         return;
       }
 
+      if (!isDatabaseAvailable()) {
+        if (
+          normalizedEmail !== getDemoUser().email.toLowerCase() ||
+          normalizedCode !== getDemoResetCode()
+        ) {
+          sendError(res, 400, "Invalid recovery code");
+          return;
+        }
+        setDemoPassword(password);
+        clearDemoResetCode();
+        res.json({ ok: true, message: "Password updated successfully" });
+        return;
+      }
+
       const [resetRows] = await pool.query(
         `
           SELECT id, user_id, expires_at, used_at
@@ -515,6 +604,11 @@ export function createAuthRouter() {
       }
       const { session } = auth;
 
+      if (!isDatabaseAvailable()) {
+        res.json({ user: getDemoUser() });
+        return;
+      }
+
       const prefRow = await getUserPreferences(session.user_id);
       res.json({
         user: {
@@ -546,6 +640,12 @@ export function createAuthRouter() {
         return;
       }
 
+      if (!isDatabaseAvailable()) {
+        deleteDemoSession(token);
+        res.json({ ok: true });
+        return;
+      }
+
       await pool.query("DELETE FROM sessions WHERE token = ?", [token]);
       res.json({ ok: true });
     } catch (error) {
@@ -569,6 +669,12 @@ export function createAuthRouter() {
 
       if (!username || !email || !isValidEmail(email)) {
         sendError(res, 400, "Invalid profile payload");
+        return;
+      }
+
+      if (!isDatabaseAvailable()) {
+        updateDemoUser({ username, email, bio, avatar });
+        res.json({ ok: true });
         return;
       }
 
@@ -607,6 +713,19 @@ export function createAuthRouter() {
         "showStats",
         "allowMessages",
       ]);
+
+      if (!isDatabaseAvailable()) {
+        updateDemoUser({
+          language,
+          theme,
+          accountStatus,
+          plan,
+          notifications,
+          privacy,
+        });
+        res.json({ ok: true });
+        return;
+      }
 
       await pool.query(
         "UPDATE users SET language = ?, theme = ?, account_status = ?, plan = ? WHERE id = ?",

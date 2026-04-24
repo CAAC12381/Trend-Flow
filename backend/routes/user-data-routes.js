@@ -1,5 +1,17 @@
 import express from "express";
 import pool from "../db.js";
+import { isDatabaseAvailable } from "../db.js";
+import {
+  addDemoSavedReport,
+  addDemoSearchHistory,
+  getDemoNotifications,
+  getDemoSavedReports,
+  getDemoSearchHistory,
+  markAllDemoNotificationsRead,
+  markDemoNotificationRead,
+  setDemoAudienceDemographics,
+  syncDemoNotifications,
+} from "../demo-store.js";
 import { requireSessionUser } from "../auth-routes.js";
 import { asyncRoute, sendError } from "../utils/http.js";
 import { clamp, normalizeText } from "../utils/validation.js";
@@ -11,6 +23,10 @@ export function createUserDataRouter() {
   router.get("/notifications", asyncRoute(async (req, res) => {
     const auth = await requireSessionUser(req, res);
     if (!auth) {
+      return;
+    }
+    if (!isDatabaseAvailable()) {
+      res.json(getDemoNotifications());
       return;
     }
     const { session } = auth;
@@ -39,6 +55,11 @@ export function createUserDataRouter() {
   router.post("/notifications/sync", asyncRoute(async (req, res) => {
     const auth = await requireSessionUser(req, res);
     if (!auth) {
+      return;
+    }
+    if (!isDatabaseAvailable()) {
+      const trends = Array.isArray(req.body?.trends) ? req.body.trends : [];
+      res.json(syncDemoNotifications(trends));
       return;
     }
     const { session } = auth;
@@ -105,6 +126,11 @@ export function createUserDataRouter() {
     if (!auth) {
       return;
     }
+    if (!isDatabaseAvailable()) {
+      markDemoNotificationRead(req.params.id);
+      res.json({ ok: true });
+      return;
+    }
     const { session } = auth;
     await pool.query(
       `
@@ -122,6 +148,11 @@ export function createUserDataRouter() {
     if (!auth) {
       return;
     }
+    if (!isDatabaseAvailable()) {
+      markAllDemoNotificationsRead();
+      res.json({ ok: true });
+      return;
+    }
     const { session } = auth;
     await pool.query(
       `
@@ -137,6 +168,11 @@ export function createUserDataRouter() {
   router.post("/search-history", asyncRoute(async (req, res) => {
     const auth = await requireSessionUser(req, res);
     if (!auth) {
+      return;
+    }
+    if (!isDatabaseAvailable()) {
+      addDemoSearchHistory(normalizeText(req.body?.query, 180));
+      res.json({ ok: true });
       return;
     }
     const { session } = auth;
@@ -158,6 +194,11 @@ export function createUserDataRouter() {
   router.get("/search-history", asyncRoute(async (req, res) => {
     const auth = await requireSessionUser(req, res);
     if (!auth) {
+      return;
+    }
+    if (!isDatabaseAvailable()) {
+      const limit = clamp(Number.parseInt(String(req.query.limit || "12"), 10), 1, 40);
+      res.json(getDemoSearchHistory(limit));
       return;
     }
     const { session } = auth;
@@ -186,6 +227,11 @@ export function createUserDataRouter() {
     if (!auth) {
       return;
     }
+    if (!isDatabaseAvailable()) {
+      const item = addDemoSavedReport(req.body || {});
+      res.json({ ok: true, id: item.id });
+      return;
+    }
     const { session } = auth;
     const reportType = ["analytics", "dashboard", "trends"].includes(req.body?.reportType)
       ? req.body.reportType
@@ -212,6 +258,11 @@ export function createUserDataRouter() {
   router.get("/saved-reports", asyncRoute(async (req, res) => {
     const auth = await requireSessionUser(req, res);
     if (!auth) {
+      return;
+    }
+    if (!isDatabaseAvailable()) {
+      const limit = clamp(Number.parseInt(String(req.query.limit || "20"), 10), 1, 60);
+      res.json(getDemoSavedReports(limit));
       return;
     }
     const { session } = auth;

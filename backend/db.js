@@ -27,6 +27,8 @@ const pool = mysql.createPool({
   database: DB_NAME,
 });
 
+let databaseAvailable = false;
+
 async function columnExists(tableName, columnName) {
   const [rows] = await pool.query(
     `
@@ -240,6 +242,12 @@ export async function initDatabase() {
       INDEX idx_trend_enrichments_source_updated (source, updated_at)
     )
   `);
+
+  databaseAvailable = true;
+}
+
+export function isDatabaseAvailable() {
+  return databaseAvailable;
 }
 
 export default pool;

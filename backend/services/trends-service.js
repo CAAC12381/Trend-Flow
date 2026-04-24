@@ -1,6 +1,11 @@
 import googleTrends from "google-trends-api";
 import axios from "axios";
 import pool from "../db.js";
+import { isDatabaseAvailable } from "../db.js";
+import {
+  getDemoAudienceDemographics,
+  setDemoAudienceDemographics,
+} from "../demo-store.js";
 import {
   API_BASE_URL,
   NEWS_API_KEY,
@@ -207,6 +212,9 @@ function parseFirstJsonObject(text) {
 }
 
 async function getTrendHistoryPoints(palabra, source, limit = 8) {
+  if (!isDatabaseAvailable()) {
+    return [];
+  }
   const [rows] = await pool.query(
     `
       SELECT ti.menciones, ti.crecimiento, ts.captured_at
@@ -227,6 +235,9 @@ async function getTrendHistoryPoints(palabra, source, limit = 8) {
 }
 
 async function getRecentSnapshots(limit = 8) {
+  if (!isDatabaseAvailable()) {
+    return [];
+  }
   const [rows] = await pool.query(
     `
       SELECT id, captured_at, source_count, total_mentions
@@ -293,15 +304,17 @@ async function getTemporalComparison(currentTrends) {
   let previousTrendRows = [];
 
   if (previousSnapshotId) {
-    const [rows] = await pool.query(
-      `
-        SELECT palabra, source, menciones
-        FROM trend_items
-        WHERE snapshot_id = ?
-      `,
-      [previousSnapshotId],
-    );
-    previousTrendRows = rows;
+    if (isDatabaseAvailable()) {
+      const [rows] = await pool.query(
+        `
+          SELECT palabra, source, menciones
+          FROM trend_items
+          WHERE snapshot_id = ?
+        `,
+        [previousSnapshotId],
+      );
+      previousTrendRows = rows;
+    }
   }
 
   const previousTrendMap = new Map(
@@ -669,6 +682,13 @@ async function generateAiEnrichment(trend, lifecycle, geoRegions) {
 }
 
 async function getTrendEnrichment(trend) {
+  if (!isDatabaseAvailable()) {
+    const history = await getTrendHistoryPoints(trend.palabra, trend.source, 8);
+    const lifecycle = inferLifecycle(history, trend);
+    const geoRegions = await fetchGeoRegions(trend);
+    return generateAiEnrichment(trend, lifecycle, geoRegions);
+  }
+
   const trendKey = createTrendKey(trend.palabra, trend.source);
   const [cachedRows] = await pool.query(
     `
@@ -750,6 +770,35 @@ async function getTrendEnrichment(trend) {
 }
 
 async function getAudienceDemographics(primarySource, estimatedAge, estimatedGender) {
+  if (!isDatabaseAvailable()) {
+    const demoData = getDemoAudienceDemographics();
+    if (!demoData) {
+      return {
+        ageBreakdown: estimatedAge,
+        genderBreakdown: estimatedGender,
+        audienceMeta: {
+          mode: "estimated",
+          provider: "estimated-model",
+          source: primarySource,
+          note: "Modo demo activo: audiencia estimada por fuente.",
+          capturedAt: null,
+        },
+      };
+    }
+
+    return {
+      ageBreakdown: demoData.ageBreakdown || estimatedAge,
+      genderBreakdown: demoData.genderBreakdown || estimatedGender,
+      audienceMeta: demoData.audienceMeta || {
+        mode: "estimated",
+        provider: "demo-store",
+        source: primarySource,
+        note: "Modo demo activo.",
+        capturedAt: null,
+      },
+    };
+  }
+
   const [rows] = await pool.query(
     `
       SELECT source, age_json, gender_json, is_real, provider, note, captured_at
@@ -794,6 +843,9 @@ async function getAudienceDemographics(primarySource, estimatedAge, estimatedGen
 }
 
 async function saveHistorySnapshot(trends) {
+  if (!isDatabaseAvailable()) {
+    return;
+  }
   if (!Array.isArray(trends) || trends.length === 0) {
     return;
   }
@@ -1049,6 +1101,22 @@ export async function getHistoricalTrends(query) {
     return [];
   }
 
+  if (!isDatabaseAvailable()) {
+    const trends = await getViralTrends();
+    return trends
+      .filter((trend) =>
+        [trend.palabra, trend.source, ...(trend.tags || [])]
+          .join(" ")
+          .toLowerCase()
+          .includes(normalizedQuery),
+      )
+      .slice(0, 12)
+      .map((trend) => ({
+        ...trend,
+        capturedAt: new Date().toISOString(),
+      }));
+  }
+
   const [rows] = await pool.query(
     `
       SELECT
@@ -1277,6 +1345,23 @@ export async function storeAudienceDemographics(payload) {
   const provider = normalizeText(payload?.provider || "manual-import", 120);
   const note = normalizeText(payload?.note || "", 255) || null;
   const capturedAt = payload?.capturedAt ? new Date(payload.capturedAt) : new Date();
+
+  if (!isDatabaseAvailable()) {
+    setDemoAudienceDemographics({
+      ageBreakdown,
+      genderBreakdown,
+      audienceMeta: {
+        mode: payload?.isReal === false ? "estimated" : "real",
+        provider: provider || "manual-import",
+        source,
+        note: note || "Modo demo activo.",
+        capturedAt: Number.isNaN(capturedAt.getTime())
+          ? new Date().toISOString()
+          : capturedAt.toISOString(),
+      },
+    });
+    return { ok: true };
+  }
 
   await pool.query(
     `

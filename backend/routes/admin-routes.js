@@ -1,5 +1,12 @@
 import express from "express";
 import pool from "../db.js";
+import { isDatabaseAvailable } from "../db.js";
+import {
+  getDemoNotifications,
+  getDemoSavedReports,
+  getDemoSearchHistory,
+  getDemoUser,
+} from "../demo-store.js";
 import { requireAdminUser } from "../auth-routes.js";
 import {
   ADMIN_EMAILS,
@@ -29,6 +36,62 @@ export function createAdminRouter() {
   router.get("/admin/summary", asyncRoute(async (req, res) => {
     const auth = await requireAdminUser(req, res);
     if (!auth) {
+      return;
+    }
+
+    if (!isDatabaseAvailable()) {
+      const demoUser = getDemoUser();
+      const notifications = getDemoNotifications();
+      const savedReports = getDemoSavedReports(20);
+      const searches = getDemoSearchHistory(20);
+
+      res.json({
+        generatedAt: new Date().toISOString(),
+        totals: {
+          users: 1,
+          admins: 1,
+          activeUsers: 1,
+          premiumUsers: demoUser.plan === "Premium" ? 1 : 0,
+          sessions: 1,
+          activeSessions: 1,
+          savedReports: savedReports.length,
+          notifications: notifications.length,
+          unreadNotifications: notifications.filter((item) => !item.read).length,
+          searches: searches.length,
+          snapshots: 0,
+          trendItems: 0,
+          enrichments: 0,
+        },
+        latestSnapshot: null,
+        recentUsers: [
+          {
+            id: demoUser.id,
+            username: demoUser.username,
+            email: demoUser.email,
+            role: demoUser.role,
+            plan: demoUser.plan,
+            accountStatus: demoUser.accountStatus,
+            createdAt: new Date().toISOString(),
+          },
+        ],
+        sourceTotals: [],
+        recentActivity: searches.slice(0, 5).map((item) => ({
+          type: "search",
+          title: item.query,
+          actor: demoUser.email,
+          createdAt: item.lastAt,
+        })),
+        providers: [
+          boolStatus(YOUTUBE_API_KEY, "YouTube Data API v3", "Tendencias reales de video"),
+          boolStatus(NEWS_API_KEY, "News API", "Noticias externas monitoreadas"),
+          boolStatus(GOOGLE_CLIENT_ID, "Google OAuth", "Inicio de sesion real"),
+          boolStatus(OPENROUTER_API_KEY, "OpenRouter IA", OPENROUTER_MODEL),
+        ],
+        access: {
+          mode: "demo-fallback",
+          adminEmailsConfigured: ADMIN_EMAILS.length,
+        },
+      });
       return;
     }
 
