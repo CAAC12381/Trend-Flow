@@ -5,6 +5,57 @@ const API_BASE_URL =
     : "http://localhost:3000");
 const AUTH_TOKEN_KEY = "treend-auth-token";
 
+function sleep(ms: number) {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
+}
+
+function toErrorMessage(
+  error: unknown,
+  fallbackMessage: string,
+  wakeHint = false,
+) {
+  if (error instanceof Error) {
+    const normalizedMessage = error.message.trim();
+    if (normalizedMessage && normalizedMessage !== "Failed to fetch") {
+      return normalizedMessage;
+    }
+  }
+
+  return wakeHint
+    ? `${fallbackMessage} Si el backend estaba dormido, espera unos segundos y vuelve a intentar.`
+    : fallbackMessage;
+}
+
+async function fetchWithRetry(
+  input: string,
+  init?: RequestInit,
+  options?: {
+    retries?: number;
+    retryDelayMs?: number;
+  },
+): Promise<Response> {
+  const retries = options?.retries ?? 0;
+  const retryDelayMs = options?.retryDelayMs ?? 1800;
+
+  let attempt = 0;
+  let lastError: unknown = null;
+
+  while (attempt <= retries) {
+    try {
+      return await fetch(input, init);
+    } catch (error) {
+      lastError = error;
+      if (attempt === retries) {
+        throw error;
+      }
+      await sleep(retryDelayMs);
+      attempt += 1;
+    }
+  }
+
+  throw lastError instanceof Error ? lastError : new Error("Request failed");
+}
+
 export type TrendState = "Viral" | "En crecimiento" | "Emergente";
 export type DataQuality = "real" | "estimated" | "heuristic";
 
@@ -348,7 +399,21 @@ async function fetchJson<T>(path: string): Promise<T> {
   if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
-  const response = await fetch(`${API_BASE_URL}${path}`, { headers });
+  let response: Response;
+  try {
+    response = await fetchWithRetry(`${API_BASE_URL}${path}`, { headers }, {
+      retries: 1,
+      retryDelayMs: 2200,
+    });
+  } catch (error) {
+    throw new Error(
+      toErrorMessage(
+        error,
+        "No se pudo conectar con el servidor.",
+        true,
+      ),
+    );
+  }
 
   if (!response.ok) {
     const fallbackMessage =
@@ -405,21 +470,36 @@ export function getNotifications() {
 
 export async function syncNotifications(trends: ViralTrend[]) {
   const token = getAuthToken();
-  const response = await fetch(`${API_BASE_URL}/notifications/sync`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: JSON.stringify({
-      trends: trends.map((trend) => ({
-        palabra: trend.palabra,
-        source: trend.source,
-        crecimiento: trend.crecimiento,
-        estado: trend.estado,
-      })),
-    }),
-  });
+  let response: Response;
+  try {
+    response = await fetchWithRetry(
+      `${API_BASE_URL}/notifications/sync`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          trends: trends.map((trend) => ({
+            palabra: trend.palabra,
+            source: trend.source,
+            crecimiento: trend.crecimiento,
+            estado: trend.estado,
+          })),
+        }),
+      },
+      { retries: 1, retryDelayMs: 2000 },
+    );
+  } catch (error) {
+    throw new Error(
+      toErrorMessage(
+        error,
+        "No se pudo sincronizar notificaciones.",
+        true,
+      ),
+    );
+  }
   if (!response.ok) {
     throw new Error("Notifications sync failed");
   }
@@ -517,14 +597,29 @@ export async function saveAudienceDemographics(payload: {
 
 export async function chatAssistant(messages: AssistantMessage[]) {
   const token = getAuthToken();
-  const response = await fetch(`${API_BASE_URL}/assistant/chat`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: JSON.stringify({ messages }),
-  });
+  let response: Response;
+  try {
+    response = await fetchWithRetry(
+      `${API_BASE_URL}/assistant/chat`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ messages }),
+      },
+      { retries: 1, retryDelayMs: 2000 },
+    );
+  } catch (error) {
+    throw new Error(
+      toErrorMessage(
+        error,
+        "No se pudo conectar con el asistente.",
+        true,
+      ),
+    );
+  }
 
   if (!response.ok) {
     const payload = await response.json().catch(() => ({}));
@@ -539,11 +634,26 @@ export async function registerAuth(payload: {
   email: string;
   password: string;
 }) {
-  const response = await fetch(`${API_BASE_URL}/auth/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+  let response: Response;
+  try {
+    response = await fetchWithRetry(
+      `${API_BASE_URL}/auth/register`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      },
+      { retries: 1, retryDelayMs: 2200 },
+    );
+  } catch (error) {
+    throw new Error(
+      toErrorMessage(
+        error,
+        "No se pudo crear la cuenta.",
+        true,
+      ),
+    );
+  }
   if (!response.ok) {
     throw new Error(await readErrorMessage(response, "No se pudo crear la cuenta"));
   }
@@ -551,11 +661,26 @@ export async function registerAuth(payload: {
 }
 
 export async function loginAuth(payload: { email: string; password: string }) {
-  const response = await fetch(`${API_BASE_URL}/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+  let response: Response;
+  try {
+    response = await fetchWithRetry(
+      `${API_BASE_URL}/auth/login`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      },
+      { retries: 1, retryDelayMs: 2200 },
+    );
+  } catch (error) {
+    throw new Error(
+      toErrorMessage(
+        error,
+        "No se pudo iniciar sesion.",
+        true,
+      ),
+    );
+  }
   if (!response.ok) {
     throw new Error(await readErrorMessage(response, "No se pudo iniciar sesion"));
   }
@@ -565,11 +690,26 @@ export async function loginAuth(payload: { email: string; password: string }) {
 export async function socialAuth(payload: {
   provider: "google" | "apple" | "facebook";
 }) {
-  const response = await fetch(`${API_BASE_URL}/auth/social`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+  let response: Response;
+  try {
+    response = await fetchWithRetry(
+      `${API_BASE_URL}/auth/social`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      },
+      { retries: 1, retryDelayMs: 2200 },
+    );
+  } catch (error) {
+    throw new Error(
+      toErrorMessage(
+        error,
+        "No se pudo iniciar sesion social.",
+        true,
+      ),
+    );
+  }
   if (!response.ok) {
     throw new Error(
       await readErrorMessage(response, "No se pudo iniciar sesion social"),
@@ -579,11 +719,26 @@ export async function socialAuth(payload: {
 }
 
 export async function googleAuth(payload: { credential: string }) {
-  const response = await fetch(`${API_BASE_URL}/auth/google`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+  let response: Response;
+  try {
+    response = await fetchWithRetry(
+      `${API_BASE_URL}/auth/google`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      },
+      { retries: 1, retryDelayMs: 2200 },
+    );
+  } catch (error) {
+    throw new Error(
+      toErrorMessage(
+        error,
+        "No se pudo iniciar sesion con Google.",
+        true,
+      ),
+    );
+  }
   if (!response.ok) {
     throw new Error(
       await readErrorMessage(response, "No se pudo iniciar sesion con Google"),
@@ -593,11 +748,26 @@ export async function googleAuth(payload: { credential: string }) {
 }
 
 export async function forgotPasswordAuth(payload: { email: string }) {
-  const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+  let response: Response;
+  try {
+    response = await fetchWithRetry(
+      `${API_BASE_URL}/auth/forgot-password`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      },
+      { retries: 1, retryDelayMs: 2200 },
+    );
+  } catch (error) {
+    throw new Error(
+      toErrorMessage(
+        error,
+        "No se pudo generar el codigo de recuperacion.",
+        true,
+      ),
+    );
+  }
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
     throw new Error(data?.error || "Forgot password failed");
@@ -610,11 +780,26 @@ export async function resetPasswordAuth(payload: {
   code: string;
   password: string;
 }) {
-  const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+  let response: Response;
+  try {
+    response = await fetchWithRetry(
+      `${API_BASE_URL}/auth/reset-password`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      },
+      { retries: 1, retryDelayMs: 2200 },
+    );
+  } catch (error) {
+    throw new Error(
+      toErrorMessage(
+        error,
+        "No se pudo cambiar la contrasena.",
+        true,
+      ),
+    );
+  }
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
     throw new Error(data?.error || "Reset password failed");
@@ -624,9 +809,18 @@ export async function resetPasswordAuth(payload: {
 
 export async function meAuth() {
   const token = getAuthToken();
-  const response = await fetch(`${API_BASE_URL}/auth/me`, {
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-  });
+  let response: Response;
+  try {
+    response = await fetchWithRetry(
+      `${API_BASE_URL}/auth/me`,
+      {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      },
+      { retries: 2, retryDelayMs: 2500 },
+    );
+  } catch {
+    throw new Error("Session invalid");
+  }
   if (!response.ok) {
     throw new Error("Session invalid");
   }
